@@ -1,0 +1,10 @@
+{
+  "componentGenerics": {
+    "scoped-slots-action": true,
+    "scoped-slots-default": true
+  },
+  "component": true,
+  "usingComponents": {
+    "tab-bar": "/components/tab-bar/index"
+  }
+}

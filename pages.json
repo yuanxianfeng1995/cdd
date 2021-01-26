@@ -1,0 +1,44 @@
+{
+	"darkmode": true,
+	"themeLocation": "theme.json",
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "采多多"
+			}
+		},
+		{
+			"path": "pages/invite/index",
+			"style": {
+				"navigationBarTitleText": "我的邀请码"
+			}
+		}
+		// {
+		// 	"path": "pages/mine/index",
+		// 	"style": {
+		// 		"navigationBarTitleText": "我的"
+		// 	}
+		// },
+		// {
+		// 	"path": "pages/shopping-cart/index",
+		// 	"style": {
+		// 		"navigationBarTitleText": "购物车"
+		// 	}
+		// },
+		// {
+		// 	"path": "pages/track/index",
+		// 	"style": {
+		// 		"navigationBarTitleText": "跟踪"
+		// 	}
+		// }
+	],
+	"globalStyle": {
+		"navigationStyle": "custom",
+		"navigationBarTitleText": "采多多",
+		"navigationBarBackgroundColor": "@navBarBgColor",
+		"navigationBarTextStyle": "@navBarTxtStyle",
+		"backgroundColor": "@bgColor",
+		"backgroundTextStyle": "@bgTextStyle"
+	}
+}

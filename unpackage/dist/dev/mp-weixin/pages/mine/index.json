@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "row-button": "/components/row-button/index"
+  }
+}

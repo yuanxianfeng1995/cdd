@@ -1,0 +1,21 @@
+@import "./theme/index.scss";
+@import "./flex-box.scss";
+.full {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.primary-btn {
+  background-color: var(--background-color-main-0);
+  color: #fff;
+  min-width: 180rpx;
+  font-size: 34rpx;
+}
+.default-btn {
+  font-size: 34rpx;
+}
+.uni-picker-container .uni-picker .uni-picker-action-confirm {
+  color: #d7b57c !important;
+}

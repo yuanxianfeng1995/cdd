@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "采多多",
+  "usingComponents": {
+    "arrow": "/components/arrow/index",
+    "mine": "/pages/mine/index",
+    "shopping-cart": "/pages/shopping-cart/index",
+    "track": "/pages/track/index"
+  }
+}

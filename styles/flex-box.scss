@@ -1,0 +1,42 @@
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row-center {
+  @extend .flex-row;
+  justify-content: center;
+}
+
+.flex-row-space-between {
+  @extend .flex-row;
+  justify-content: space-between;
+}
+
+.flex-row-bottom {
+  @extend .flex-row;
+  align-items: flex-end;
+}
+
+.flex-row-top {
+  @extend .flex-row;
+  align-items: flex-start;
+}
+
+.flex-col-center {
+  @extend .flex-col;
+  justify-content: center;
+  align-items: center;
+}
+
+@for $i from 1 through 10 {
+  .flex-#{$i} {
+    flex: $i;
+  }
+}

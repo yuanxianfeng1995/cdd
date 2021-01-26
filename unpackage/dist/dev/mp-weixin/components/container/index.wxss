@@ -1,0 +1,22 @@
+
+@-webkit-keyframes loading-data-v-763b7759 {
+0% {
+    background-position-x: 0;
+}
+100% {
+    background-position-x: 125vmax;
+}
+}
+@keyframes loading-data-v-763b7759 {
+0% {
+    background-position-x: 0;
+}
+100% {
+    background-position-x: 125vmax;
+}
+}
+.root.data-v-763b7759 {
+  background-color: var(--background-color-0);
+  color: var(--font-color-0);
+}
+
