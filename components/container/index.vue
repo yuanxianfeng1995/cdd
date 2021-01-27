@@ -29,6 +29,7 @@
     </view>
     <TabBar
       v-if="tabbar"
+			:shoppingCartCount="shoppingCartCount"
       :value="value"
       @input="input"
       @change="change"

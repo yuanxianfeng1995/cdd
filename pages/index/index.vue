@@ -1,5 +1,6 @@
 <template>
-	<Container style="padding-top: 100rpx;" v-model="current" tabbar :is-back="false" :shoppingCartCount="shoppingCartCount" :style="[{backgroundColor:'var(--background-color-1)'}]">
+	<Container style="padding-top: 100rpx;" v-model="current" tabbar :is-back="false" :shoppingCartCount="shoppingCartCount"
+	 :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view slot="action">
 			<picker @change="PickerChange" :value="index" :range="picker">
 				<view class="picker">
@@ -54,6 +55,7 @@
 		<Mine v-else-if="current==='mine'" />
 		<ShoppingCart v-else-if="current==='shopping-cart'" />
 		<Track v-else-if="current==='track'" />
+		<Order v-else-if="current==='order'"></Order>
 	</Container>
 </template>
 
@@ -61,15 +63,19 @@
 	import Arrow from '@/components/arrow';
 	import Mine from '../mine';
 	import Track from '../track';
+	import Order from '../order';
 	import ShoppingCart from '../shopping-cart';
-	import {getMini} from '@/api/auth';
-	import {getLoginInfo} from '@/store/user.js';
+	import {
+		getMini,
+		cart
+	} from '@/api/auth';
 	export default {
 		components: {
 			Arrow,
 			Mine,
 			ShoppingCart,
 			Track,
+			Order
 		},
 		onPullDownRefresh() {
 			uni.stopPullDownRefresh();
@@ -78,7 +84,7 @@
 			return {
 				StatusBar: this.StatusBar,
 				CustomBar: this.CustomBar,
-				current: 'home',
+				current: 'order',
 				hidden: true,
 				listCurID: '',
 				list: [],
@@ -89,14 +95,16 @@
 					'千金大药房 (梅溪湖店)',
 					'千金大药房 (尖山湖店)',
 				],
-				shoppingCartCount: 0
+				shoppingCartCount: 0,
+				loding: true
 			};
 		},
 		async onLoad() {
-		},
-		async onReady() {
+			this.$loading.open()
 			await this.authorize();
 			await this.getMini();
+		},
+		async onReady() {
 			let that = this;
 			uni
 				.createSelectorQuery()
@@ -118,8 +126,8 @@
 				const that = this;
 				wx.getSetting({
 					success(res) {
-						console.log('getSetting', res,res.authSetting['scope.userInfo'],getLoginInfo()?.data?.token,!(res.authSetting['scope.userInfo']&&getLoginInfo()?.data?.token))
-						if (!(res.authSetting['scope.userInfo']&&getLoginInfo()?.data?.token)) {
+						let info = that.$store.getLoginInfo()?.data;
+						if (!(res.authSetting['scope.userInfo'] && info?.token)) {
 							uni.navigateTo({
 								url: '/pages/login/index',
 							});
@@ -128,28 +136,47 @@
 				})
 			},
 			async getMini() {
-				const that=this;
-				if (getLoginInfo()?.data?.token) {
-					getMini().then(({data}) => {
-						let list=[];
-						let i=0;
-						let obj = data?.data||{};
-						for (let [key, value,b] of Object.entries(obj)) {
+				const that = this;
+				let info = this.$store.getLoginInfo()?.data;
+				if (info?.token) {
+					getMini().then(({
+						data
+					}) => {
+						console.log('data',data)
+						let list = [];
+						let i = 0;
+						let obj = data?.data || {};
+						for (let [key, value, b] of Object.entries(obj)) {
 							list[i] = {
 								name: key,
 								data: value
 							};
 							i++;
 						}
-						that.list=list;
-						console.log('that.list',list)
+						that.list = list;
+						console.log('that.list', list)
 						that.listCur = that.list[0];
+						that.$loading.close()
 					})
+				}else{
+					that.$loading.close()
 				}
 			},
 			addShoppingCart(val) {
-				console.log('addShoppingCart',val)
+				console.log('addShoppingCart', val)
 				this.shoppingCartCount++;
+				let data = this.$store.getLoginInfo()?.data;
+				console.log('data',data)
+				cart({
+					"userId": data.userId,
+					"userType": data.userType,
+					"medicineId": val.id,
+					"medicineName": val.name,
+					"price": val.price,
+					"specifications": val.specifications,
+					"equivalent": val.equivalent,
+					"number": this.shoppingCartCount
+				})
 			},
 			PickerChange(e) {
 				this.index = e.detail.value;

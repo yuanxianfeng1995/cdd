@@ -23,7 +23,6 @@ export const fetch = (method, url, params = {}, opt = {}) => new Promise((resolv
 			'Appid': 'wx0f05a5f148707c12',
 			'Thrid-session': 'vgfgf'
 		};
-		console.log('fetch token',token)
 	if(token) obj.token=token;
 	wx.request({
 		method,

@@ -1,65 +1,127 @@
 <template>
-  <view :style="style">
-    <view>
-      <view
-        class="card"
-        v-for="(item,index) in 10"
-        :key="index"
-      >
-        <text style="font-size:32rpx;">甘草</text>
-        <view class="flex-row-space-between">
-          <view class="flex-1 flex-row">
-            <text class="flex-1">0.5g/3g</text>
-            <text
-              class="flex-1"
-              style="color:red"
-            >￥5.12</text>
-          </view>
-          <view
-            class="flex-row"
-            style="border:1rpx solid var(--border-color-0)"
-          >
-            <text style="padding:10rpx 30rpx;">-</text>
-            <input
-              type="number"
-              value="100"
-              style="text-align:center;width:80rpx;background-color:var(--background-color-1)"
-            />
-            <text style="padding:10rpx 30rpx;">+</text>
-          </view>
-        </view>
-      </view>
-    </view>
-    <view
-      class="flex-row-space-between"
-      style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;"
-    >
-      <view>
-        <text>合计</text>
-        <text style="color:red;">￥512.00</text>
-      </view>
-      <button
-        class="cu-btn shadow-blur round"
-        style="background-color:var(--background-color-main-0);color:#fff;"
-      >结算</button>
-    </view>
-  </view>
+	<view :style="style" class="shopping-cart">
+		<Empty v-if="data&&data.length===0"></Empty>
+		<template v-else >
+			<view class="header-btn" @click="changeStatus">{{name}}</view>
+			<List :data="data" :mode="mode" ref="list"></List>
+		</template>
+		
+		<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;">
+			<view>
+				<text>合计</text>
+				<text style="color:red;">￥{{totalMoney}}</text>
+			</view>
+			<button @click="ok" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name2}}</button>
+		</view>
+	</view>
 </template>
 
 <script>
-export default {
-  computed: {
-    style() {
-      return `margin-top:-${this.CustomBar}rpx;  padding-bottom: calc(env(safe-area-inset-bottom) / 2 + 100rpx);`;
-    },
-  },
-};
+	import {
+		getCartPage,
+		order
+	} from '@/api/auth';
+	import List from './components/list.vue';
+	import Empty from '@/components/empty';
+	export default {
+		components: {
+			List,
+			Empty
+		},
+		data() {
+			return {
+				data: [],
+				totalMoney: null,
+				mode: 'add'
+			}
+		},
+		computed: {
+			style() {
+				return `margin-top:-${this.CustomBar}rpx;  padding-bottom: calc(env(safe-area-inset-bottom) / 2 + 100rpx);`;
+			},
+			name() {
+				return this.mode === "add" ? "编辑" : this.mode === "edit" ? "完成" : "";
+			},
+			name2() {
+				return this.mode === "add" ? "结算" : this.mode === "edit" ? "删除" : this.mode === "check" ? "下单" : "联系客服";
+			}
+		},
+		async onReady() {
+			console.log('onReady')
+			this.$loading.open()
+			this.getCartPage()
+		},
+		methods: {
+			changeStatus() {
+				this.mode = this.mode === "add" ? "edit" : this.mode === "edit" ? "check" : "add";
+				console.log('changeStatus', this.mode)
+			},
+			ok() {
+				switch (this.mode) {
+					case "add":
+						this.mode = "check";
+						break;
+					case "edit":
+						this.$refs.list.delete()
+						break;
+					case "check":
+						this.order()
+						break;	
+				}
+			},
+			order(){
+				let data=this.$refs.list.getData();
+				let userInfo=this.$store.getLoginInfo()?.data;
+				console.log(userInfo)
+				let parms={
+					"userId": userInfo.userId,
+					"userType": userInfo.userType,
+					"orderDetails": data.map(item=>{
+						return {
+							"cartDetailsId": item.cartDetailsId,
+							"medicineId": item.medicineId,
+							"medicineName": item.medicineName,
+							"price": item.price,
+							"specifications": item.specifications,
+							"equivalent": item.equivalent,
+							"number": item.number,
+						}
+					})
+				}
+				order(parms).then(({data})=>{
+					console.log(data)
+					this.mode = "customer ";
+				})
+			},
+			getCartPage() {
+				const that = this;
+				let data = that.$store.getLoginInfo()?.data;
+				getCartPage({
+					userType: data.userType,
+					userId: data.userId,
+					pageNo: 1,
+					pageSize: 10,
+				}).then(({
+					data
+				}) => {
+					console.log(data)
+					that.data = data?.data?.list?.cartDetails|| [];
+					that.totalMoney = data?.data?.list?.totalMoney;
+					console.log(that.data)
+					that.$loading.close()
+				})
+			}
+		}
+	};
 </script>
 
 <style lang="scss" scoped>
-.card {
-  background-color: var(--background-color-0);
-  margin-bottom: 20rpx;
-  padding: 20rpx;
-}
+	.header-btn {
+		text-align: right;
+		z-index: 9;
+	}
+
+	.shopping-cart {
+		padding-top: 60rpx;
+	}
 </style>
