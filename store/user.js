@@ -8,5 +8,5 @@ export default {
   setUserInfo,
   getUserInfo,
 	setLoginInfo,
-	getLoginInfo
+	getLoginInfo,
 };

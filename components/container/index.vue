@@ -36,7 +36,7 @@
   </view>
 </template>
 <script>
-import { on, off } from '../../utils/event-hub';
+import { on, off } from '@/utils/event-hub';
 import { getCurrentFullPath } from '@/utils/router';
 import { gotoLogin } from '@/utils/navigation';
 import TabBar from '../tab-bar';
@@ -58,6 +58,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
+		shoppingCartCount: {
+      type: Number,
+      default: 0,
+    },
   },
   components: {
     TabBar,
@@ -68,6 +72,7 @@ export default {
       authInfo: $store.getAuthInfo(),
       userInfo: $store.getUserInfo(),
       mode: $store.getThemeMode(),
+			updataShoppingCartInfo: null
     };
   },
   beforeCreate() {
@@ -91,18 +96,10 @@ export default {
       this.$emit('change', data);
     },
     addEvent() {
-      on('updateAuthInfo', (data) => {
-        this.authInfo = data;
-        const userInfo = this.$store.getUserInfo();
-        // if (!userInfo.id) gotoLogin();
-        // else this.userInfo = userInfo;
-        this.userInfo = userInfo || {};
-      });
       on('updateThemeMode', (data) => (this.mode = data));
-      on('updateUserInfo', (data) => (this.userInfo = data));
+			on('updateUserInfo', (data) => (this.userInfo = data));
     },
     removeEvent() {
-      off('updateAuthInfo', () => {});
       off('updateThemeMode', () => {});
       off('updateUserInfo', () => {});
     },

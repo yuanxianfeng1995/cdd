@@ -41,6 +41,7 @@
 					phoneEncryptedData:detail.encryptedData,
 					phoneIv:detail.iv,
 				};
+				setUserInfo(parms);
 				this.$emit('change',parms);
 				
 			},

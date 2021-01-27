@@ -9,6 +9,18 @@
 			}
 		},
 		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "采多多"
+			}
+		},
+		{
+			"path": "pages/lnvitation-code/index",
+			"style": {
+				"navigationBarTitleText": "采多多"
+			}
+		},
+		{
 			"path": "pages/invite/index",
 			"style": {
 				"navigationBarTitleText": "我的邀请码"
