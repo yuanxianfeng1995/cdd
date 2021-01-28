@@ -1,19 +1,21 @@
 <template>
-	<view :style="style" class="shopping-cart">
-		<Empty v-if="data&&data.length===0"></Empty>
-		<template v-else >
-			<view class="header-btn" @click="changeStatus">{{name}}</view>
-			<List :data="data" :mode="mode" ref="list"></List>
-		</template>
-		
-		<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;">
-			<view>
-				<text>合计</text>
-				<text style="color:red;">￥{{totalMoney}}</text>
+	<Container style="padding-top: 100rpx;" tabbar :is-back="false" title="购物车">
+		<view :style="style" class="shopping-cart">
+			<Empty v-if="data&&data.length===0"></Empty>
+			<template v-else >
+				<view class="header-btn" @click="changeStatus">{{name}}</view>
+				<List :data="data" :mode="mode" ref="list"></List>
+			</template>
+			
+			<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;">
+				<view>
+					<text>合计</text>
+					<text style="color:red;">￥{{totalMoney}}</text>
+				</view>
+				<button @click="ok" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name2}}</button>
 			</view>
-			<button @click="ok" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name2}}</button>
 		</view>
-	</view>
+	</Container>
 </template>
 
 <script>
@@ -101,13 +103,13 @@
 					userId: data.userId,
 					pageNo: 1,
 					pageSize: 10,
-				}).then(({
-					data
-				}) => {
+				}).then(({data}) => {
 					console.log(data)
 					that.data = data?.data?.list?.cartDetails|| [];
 					that.totalMoney = data?.data?.list?.totalMoney;
 					console.log(that.data)
+					that.$loading.close()
+				}).filters((res) => {
 					that.$loading.close()
 				})
 			}

@@ -5,7 +5,9 @@ import {
 	tips
 } from './tips';
 	import {
-		getLoginInfo
+		getLoginInfo,
+		setLoginInfo,
+		setUserInfo
 	} from '@/store/user.js';
 const errHandler = (err) => {
 	if (err?.data?.msg) tips('错误', err?.data?.msg);
@@ -37,8 +39,11 @@ export const fetch = (method, url, params = {}, opt = {}) => new Promise((resolv
 				resCode: res?.data?.code,
 				resMsg: res?.data?.msg
 			};
-			if (res.statusCode+'' !== '200' || (res?.data?.code+'') !== '0') reject(res);
-			else resolve(data);
+			if (res.statusCode+'' !== '200' || ((res?.data?.code+'') !== '0'&&(res?.data?.code+'') !== '401')) {
+				reject(res);
+			}else {
+				resolve(data);
+			}
 		},
 		fail(err) {
 			reject(err);
@@ -48,9 +53,11 @@ export const fetch = (method, url, params = {}, opt = {}) => new Promise((resolv
 	});
 }).catch((res) => {
 	if (res.statusCode+'' !== '200' || (res?.data?.code+'')!== '0') {
-		if((res?.data?.code+'')!== '401'){
+		if((res?.data?.code+'')=== '401'){
+			setUserInfo();
+			setLoginInfo();
 			uni.navigateTo({
-			  url: '/pages/login/index.vue',
+				url: '/pages/login/index',
 			});
 		}
 		opt.errHandler ? opt.errHandler(res) : errHandler(res)

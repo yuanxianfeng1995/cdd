@@ -49,7 +49,7 @@
 			"style": {
 				"navigationBarTitleText": "我的邀请码"
 			}
-		}
+		},
 		{
 			"path": "pages/mine/index",
 			"style": {

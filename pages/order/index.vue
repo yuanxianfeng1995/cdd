@@ -1,25 +1,27 @@
 <template>
-  <view :style="style">
-    <scroll-view
-      scroll-x
-      class="nav fixed"
-      style="background-color:var(--background-color-0)"
-      :style="[{top:CustomBar + 'px'}]"
-      scroll-with-animation
-      :scroll-left="scrollLeft"
-    >
-      <view
-        class="cu-item"
-        v-for="(item,index) in items"
-        :class="current==item.value?'cur':''"
-        :key="index"
-        @tap="tabSelect(item.value)"
-      >
-        {{item.label}}
-      </view>
-    </scroll-view>
-		<List :data="data"></List>
-  </view>
+	<Container style="padding-top: 100rpx;" tabbar :is-back="false" title="订单">
+		<view :style="style">
+			<scroll-view
+				scroll-x
+				class="nav fixed"
+				style="background-color:var(--background-color-0)"
+				:style="[{top:CustomBar + 'px'}]"
+				scroll-with-animation
+				:scroll-left="scrollLeft"
+			>
+				<view
+					class="cu-item"
+					v-for="(item,index) in items"
+					:class="current==item.value?'cur':''"
+					:key="index"
+					@tap="tabSelect(item.value)"
+				>
+					{{item.label}}
+				</view>
+			</scroll-view>
+			<List :data="data"></List>
+		</view>
+	</Container>
 </template>
 
 <script>
@@ -65,7 +67,7 @@ export default {
         { label: '已下单', value: 1 },
         { label: '已发货', value: 2 },
         { label: '已完成', value: 3 },
-				{ label: '已取消', value: 3 },
+				{ label: '已取消', value: 4 },
       ],
 			data: []
     };

@@ -96,7 +96,7 @@ export default {
 				break;
 				case 'mine':
 				uni.navigateTo({
-					url: '/pages/login/index',
+					url: '/pages/mine/index',
 				});
 				break;
 				default:
