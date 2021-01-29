@@ -67,9 +67,23 @@
 						this.$refs.list.delete()
 						break;
 					case "check":
+					  // this.requestSubscribeMessage()
 						this.order()
 						break;	
 				}
+			},
+			requestSubscribeMessage(){
+				console.log('requestSubscribeMessage')
+				uni.requestSubscribeMessage({
+				  tmplIds: [''],
+				  success (res) {
+						console.log('requestSubscribeMessage',res)
+						this.order()
+					},
+					fail (e) {
+						console.log(e)
+					},
+				})
 			},
 			order(){
 				let data=this.$refs.list.getData();
@@ -109,7 +123,7 @@
 					that.totalMoney = data?.data?.list?.totalMoney;
 					console.log(that.data)
 					that.$loading.close()
-				}).filters((res) => {
+				}).finally((res) => {
 					that.$loading.close()
 				})
 			}

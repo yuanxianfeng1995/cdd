@@ -19,16 +19,18 @@
 					{{item.label}}
 				</view>
 			</scroll-view>
-			<List :data="data"></List>
+			<Empty v-if="data&&data.length===0"></Empty>
+			<List v-else :data="data" @ok="ok"></List>
 		</view>
 	</Container>
 </template>
 
 <script>
-import {getOrderPage} from '@/api/auth';
+import {getOrderPage,wxminiSync,getDict} from '@/api/auth';
 import List from '@/pages/order/components/list.vue';
+import Empty from '@/components/empty';
 export default {
-	components:{List},
+	components:{List,Empty},
 	filters:{
 		 format:function (value){
 			 let data=null;
@@ -69,12 +71,13 @@ export default {
         { label: '已完成', value: 3 },
 				{ label: '已取消', value: 4 },
       ],
-			data: []
+			data: [],
     };
   },
 	async onReady() {
 		console.log('onReady')
 		this.$loading.open()
+		await this.getDict()
 		this.getOrderPage()
 	},
   computed: {
@@ -85,6 +88,18 @@ export default {
     },
   },
   methods: {
+		getDict(){
+			const that=this;
+			getDict('order_status_type').then((data)=>{
+				console.log(data)
+				// that.items=data.map(item=>{
+				// 	return {
+				// 		value: item.value,
+				// 		label: item.description
+				// 	}
+				// })
+			})
+		},
     tabSelect(value) {
       this.current = value;
     },
@@ -102,6 +117,8 @@ export default {
 				console.log('getOrderPage data',that.data)
 				that.$loading.close()
 			})
+		},
+		ok(){
 		}
   },
 };

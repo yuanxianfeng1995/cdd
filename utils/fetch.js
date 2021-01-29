@@ -26,6 +26,10 @@ export const fetch = (method, url, params = {}, opt = {}) => new Promise((resolv
 			'Thrid-session': 'vgfgf'
 		};
 	if(token) obj.token=token;
+	if(opt.headers) obj={
+		...obj,
+		...opt.headers
+	}
 	wx.request({
 		method,
 		url: `${baseUrl}${url}`,

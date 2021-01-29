@@ -1,7 +1,18 @@
 {
 	"darkmode": true,
 	"themeLocation": "theme.json",
-	"pages": [
+	"pages": [{
+			"path": "pages/qualifications/index",
+			"style": {
+				"navigationBarTitleText": "资质审核"
+			}
+		},
+		{
+			"path": "pages/order/index",
+			"style": {
+				"navigationBarTitleText": "订单"
+			}
+		},
 		{
 			"path": "pages/home/index",
 			"style": {
@@ -18,12 +29,6 @@
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录"
-			}
-		},
-		{
-			"path": "pages/order/index",
-			"style": {
-				"navigationBarTitleText": "订单"
 			}
 		},
 		{
