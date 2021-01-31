@@ -1,10 +1,13 @@
 <template>
-	<view class="login">
-		<view class="content">
-			<button v-if="!next" type="primary" size="mini" open-type="getUserInfo" @getuserinfo="getUserinfo" withCredentials="true">微信登陆</button>
-			<button v-else type="primary" size="mini" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" @getphonenumber="getPhoneNumber" withCredentials="true">手机号</button>
+	<Container style="padding-top: 100rpx;"  title="我的">
+		<view class="login" :style="[{backgroundColor:'var(--background-color-1)'}]">
+			<view class="content">
+				<button v-if="!next" type="primary"  open-type="getUserInfo" @getuserinfo="getUserinfo" withCredentials="true">微信登陆</button>
+				<button v-else type="primary"  open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"
+				 @getphonenumber="getPhoneNumber" withCredentials="true">手机号</button>
+			</view>
 		</view>
-	</view>
+	</Container>
 </template>
 
 <script>
@@ -13,27 +16,35 @@
 		getUserInfo,
 		setLoginInfo
 	} from '@/store/user.js';
-	import {login} from '@/api/auth';
-	import {tips} from '@/utils/tips.js';
+	import {
+		login
+	} from '@/api/auth';
+
 	export default {
-		data(){
+		data() {
 			return {
 				next: false
 			}
 		},
-		methods:{
+		methods: {
 			getUserinfo() {
 				this.login();
 				this.next = true;
 			},
-			getPhoneNumber(val){
-				const detail=val.detail;
+			getPhoneNumber(val) {
+				console.log('getPhoneNumber',val)
+				const that=this;
+				const detail = val.detail;
+				if(val.detail.errMsg!=='getPhoneNumber:ok') {
+						that.$tips('提示', '用户取消授权');
+						return;
+				}
 				console.log(val)
-				const data=getUserInfo();
-				const parms={
+				const data = getUserInfo();
+				const parms = {
 					...data,
-					phoneEncryptedData:detail.encryptedData,
-					phoneIv:detail.iv,
+					phoneEncryptedData: detail.encryptedData,
+					phoneIv: detail.iv,
 				};
 				setUserInfo(parms);
 				login({
@@ -47,14 +58,14 @@
 				}).then((val) => {
 					console.log('login', val)
 					setLoginInfo(val.data)
-					tips('成功', '登陆成功');
+					that.$tips('成功', '登陆成功');
 					uni.navigateTo({
-					  url: '/pages/index/index',
+						url: '/pages/index/index',
 					});
 				})
 			},
 			login() {
-				const that=this;
+				const that = this;
 				wx.login({
 					success(res) {
 						console.log('login', res)
@@ -64,18 +75,18 @@
 							// 获取微信用户信息
 							wx.getUserInfo({
 								success: function(val) {
-									const parms={
+									const parms = {
 										...val,
-										code:code,
+										code: code,
 									};
 									setUserInfo(parms);
 								},
 								fail: res => {
-									// 获取失败的去引导用户授权 
+									that.$tips('提示', '用户取消授权');
 								}
 							})
 						} else {
-							console.log('登录失败！' + res.errMsg)
+							that.$tips('失败', '登录失败！');
 						}
 					}
 				})
@@ -91,18 +102,15 @@
 		left: 0;
 		height: 100%;
 		width: 100%;
-	  display: flex;
-	  align-items: center;
-	  justify-content: center;
-	  background-color: #f8f8f8;
-	  @media (prefers-color-scheme: dark) {
-	    background-color: #191919;
-	  }
-		.content{
-			background-color: #FFFFFF;
-			button{
-				margin-left: 20rpx;
-			}
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		@media (prefers-color-scheme: dark) {
+			background-color: #191919;
+		}
+
+		.content {
 		}
 	}
 </style>

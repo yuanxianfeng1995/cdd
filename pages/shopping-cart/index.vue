@@ -1,27 +1,27 @@
 <template>
-	<Container style="padding-top: 100rpx;" tabbar :is-back="false" title="购物车">
-		<view :style="style" class="shopping-cart">
-			<Empty v-if="data&&data.length===0"></Empty>
-			<template v-else >
-				<view class="header-btn" @click="changeStatus">{{name}}</view>
-				<List :data="data" :mode="mode" ref="list"></List>
-			</template>
-			
-			<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;">
-				<view>
-					<text>合计</text>
-					<text style="color:red;">￥{{totalMoney}}</text>
-				</view>
-				<button @click="ok" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name2}}</button>
+	<view  class="shopping-cart">
+		<Empty v-if="data.length===0"></Empty>
+		<template v-else >
+			<view class="header-btn">
+				<view @click="changeStatus">{{name}}</view>
 			</view>
+			
+			<List :data="data" :mode="mode" ref="list"></List>
+		</template>
+		
+		<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;">
+			<view>
+				<text>合计</text>
+				<text style="color:red;" >￥{{totalMoney||0}}</text>
+			</view>
+			<button @click="ok" v-if="data.length!==0" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name2}}</button>
 		</view>
-	</Container>
+	</view>
 </template>
 
 <script>
 	import {
 		getCartPage,
-		order
 	} from '@/api/auth';
 	import List from './components/list.vue';
 	import Empty from '@/components/empty';
@@ -34,84 +34,64 @@
 			return {
 				data: [],
 				totalMoney: null,
-				mode: 'add'
+				mode: 'preview',
+				tmplIds: [],
 			}
 		},
 		computed: {
-			style() {
-				return `margin-top:-${this.CustomBar}rpx;  padding-bottom: calc(env(safe-area-inset-bottom) / 2 + 100rpx);`;
-			},
 			name() {
-				return this.mode === "add" ? "编辑" : this.mode === "edit" ? "完成" : "";
+				return this.data&&this.data.length>0? this.mode === "preview" ? "编辑" : this.mode === "edit" ? "完成" : "":"";
 			},
 			name2() {
-				return this.mode === "add" ? "结算" : this.mode === "edit" ? "删除" : this.mode === "check" ? "下单" : "联系客服";
-			}
+				return this.data&&this.data.length>0?this.mode === "preview" ? "结算" : this.mode === "edit" ? "删除" : "结算" :"";
+			},
 		},
 		async onReady() {
 			console.log('onReady')
-			this.$loading.open()
-			this.getCartPage()
+			this.$loading.open();
+			await this.getCartPage();
+			uni.$on('show',(val)=>{
+				this.getCartPage();
+			})
 		},
 		methods: {
 			changeStatus() {
-				this.mode = this.mode === "add" ? "edit" : this.mode === "edit" ? "check" : "add";
+				this.mode = this.mode === "preview" ? "edit"  : "preview";
 				console.log('changeStatus', this.mode)
+				this.setData()
+			},
+			setData(){
+				let data=this.$refs.list.getData();
+				this.data=data;
+				console.log('changeStatus', data)
+				this.totalMoney=data.length>0?data.map(item=>item.number*item.price).reduce((a,b)=>{
+					return a+b
+				}):0
 			},
 			ok() {
 				switch (this.mode) {
-					case "add":
-						this.mode = "check";
+					case "preview":
+					  this.$store.setOrder({orderDetails:this.data,totalMoney:this.totalMoney});
+						uni.navigateTo({
+							url: '/pages/place-an-order/index',
+						})
 						break;
 					case "edit":
-						this.$refs.list.delete()
-						break;
-					case "check":
-					  // this.requestSubscribeMessage()
-						this.order()
+						this.formData();
 						break;	
 				}
 			},
-			requestSubscribeMessage(){
-				console.log('requestSubscribeMessage')
-				uni.requestSubscribeMessage({
-				  tmplIds: [''],
-				  success (res) {
-						console.log('requestSubscribeMessage',res)
-						this.order()
-					},
-					fail (e) {
-						console.log(e)
-					},
-				})
-			},
-			order(){
-				let data=this.$refs.list.getData();
-				let userInfo=this.$store.getLoginInfo()?.data;
-				console.log(userInfo)
-				let parms={
-					"userId": userInfo.userId,
-					"userType": userInfo.userType,
-					"orderDetails": data.map(item=>{
-						return {
-							"cartDetailsId": item.cartDetailsId,
-							"medicineId": item.medicineId,
-							"medicineName": item.medicineName,
-							"price": item.price,
-							"specifications": item.specifications,
-							"equivalent": item.equivalent,
-							"number": item.number,
-						}
-					})
-				}
-				order(parms).then(({data})=>{
-					console.log(data)
-					this.mode = "customer ";
-				})
+			formData(){
+				this.$refs.list.delete()
+				this.setData();
 			},
 			getCartPage() {
 				const that = this;
-				let data = that.$store.getLoginInfo()?.data;
+				let data = this.$store.getLoginInfo()?.data;
+				if(!(data&&data.userId)) {
+					that.$loading.close()
+					return
+				};
 				getCartPage({
 					userType: data.userType,
 					userId: data.userId,
@@ -133,11 +113,17 @@
 
 <style lang="scss" scoped>
 	.header-btn {
-		text-align: right;
 		z-index: 9;
+		text-align: right;
 	}
-
+  
 	.shopping-cart {
+		position: absolute;
+		top: 60px;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		z-index: 9;
 		padding-top: 60rpx;
 	}
 </style>

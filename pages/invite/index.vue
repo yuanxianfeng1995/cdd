@@ -1,6 +1,6 @@
 <template>
   <container title="我的邀请码">
-    <view class="content full">
+    <view class="content full" :style="[{backgroundColor:'var(--background-color-1)'}]">
       <view class="img-wrap">
         <image
           class="img"
@@ -15,14 +15,25 @@
 
 <script>
 import loading from '@/utils/loading';
+	import {getBusiness} from "@/api/auth"
 export default {
   data() {
     return {};
   },
   onLoad() {
     loading.open();
+		this.getBusiness()
   },
   methods: {
+		getBusiness(){
+			let userId=this.$store.getLoginInfo()?.data?.userId;
+			if(!userId) return;
+			getBusiness(userId).then(({data})=>{
+				consoel.log('data',data);
+			}).finally((e)=>{
+				loading.close()
+			})
+		},
     load() {
       loading.close();
     },

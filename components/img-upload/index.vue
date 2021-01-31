@@ -28,7 +28,13 @@
 		},
 		methods: {
 			getData(){
-				return this.fileList
+				return this.fileList.filter(item=>!!item).map(item=>{
+					let arr=item.split('http://static.llczf.com');
+					return arr[1]
+				})
+			},
+			fillDelete(index){
+				that.fileList.splice(index,1)
 			},
 			select(index) {
 				const that=this;
@@ -79,10 +85,10 @@
 	.add-take-item-uploader {
 		padding: 10px 16px;
 		display: flex;
-
+    flex-wrap: wrap;
 		.my-up-loader {
-			width: 80px;
-			height: 80px;
+			width: 30%;
+			height: 100px;
 			margin: 0 8px 8px 0;
 			background-color: #f7f8fa;
 			border-radius: 8px;

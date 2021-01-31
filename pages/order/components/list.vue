@@ -1,6 +1,6 @@
 <template>
-	<view class="order-list">
-		<view class="card" v-for="(item,index) in data" :key="index">
+	<scroll-view   class="order-list"  scroll-top="60" scroll-y @scrolltolower="scroll" >
+		<view class="card" v-for="(item,index) in data" :key="index" @click="itemClick(item)">
 			<view class="flex-row-space-between">
 				<text>{{item.createTime}}</text>
 				<text>{{item.status|format}}</text>
@@ -15,14 +15,42 @@
 				<view class="flex-col">
 					<text style="color:red;">￥{{item.payMoney}}</text>
 				</view>
-				<button @click="ok(item)" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">再次购买</button>
+				<button @click.stop="ok(item)" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">再次购买</button>
 			</view>
 		</view>
-	</view>
+	</scroll-view>
 </template>
 
 <script>
 	export default {
+		filters:{
+			 format:function (value){
+				 let data=null;
+				  switch(value){
+						case 0:
+						data='已下单';
+						break;
+						case 1:
+						data='待付款';
+						break;
+						case 2:
+						data='已付款';
+						break;
+						case 3:
+						data='已完成';
+						break;
+						case 4:
+						data='已过期';
+						break;
+						case 5:
+						data='待发货';
+						break;
+						default:
+						data='已发货';
+						}
+						return data
+			}
+		},
 		props: {
 			data: {
 				type: Array,
@@ -30,6 +58,13 @@
 			},
 		},
 		methods: {
+			scroll(e){
+				console.log('scroll',e)
+				this.$emit('scrollBottom')
+			},
+			itemClick(item){
+				this.$emit('itemClick', item)
+			},
 			ok(val) {
 				this.$emit('ok', val)
 			}
@@ -41,7 +76,17 @@
 	.cur {
 		color: var(--font-color-main-0);
 	}
-
+	.order-list{
+		position: fixed;
+		width: 100%;
+		top: 60px;
+		z-index: 2;
+		padding-top: 60px;
+		height: 100%;
+		@media (prefers-color-scheme: dark) {
+			background-color: #9e9e9e;
+		}
+	}
 	.card {
 		background-color: var(--background-color-0);
 		margin-bottom: 20rpx;

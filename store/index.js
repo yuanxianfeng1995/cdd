@@ -1,6 +1,7 @@
 
 import auth from './auth';
 import user from './user';
+import addrs from './addrs';
 import theme from './theme';
 import constant from './constant';
 import { login } from '@/api/auth';
@@ -46,5 +47,6 @@ export default {
   ...constant,
   ...theme,
   ...user,
+	...addrs,
   ...auth,
 };

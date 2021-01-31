@@ -1,6 +1,6 @@
 <template>
 	<Container title="资质审核">
-		<view class="qualifications">
+		<view class="qualifications" :style="[{backgroundColor:'var(--background-color-1)'}]">
 			<form @submit="formSubmit">
 				<view class="form-item">
 					<text>商户名称</text>
@@ -10,10 +10,10 @@
 					<text>联系人</text>
 					<input name="contactPer" type="text" />
 				</view>
-				<view class="form-item">
+				<view class="form-item gender">
 					<radio-group name="gender">
 						<label class="radio-first">
-							<radio value="1" style="transform:scale(0.7);" /><text>男</text>
+							<radio value="1"  checked="true" style="transform:scale(0.7);" /><text>男</text>
 						</label>
 						<label>
 							<radio value="2" style="transform:scale(0.7);" /><text>女</text>
@@ -27,16 +27,14 @@
 				<view class="form-item addr">
 					<text>地址</text>
 					<view class="select" @click="addr">{{text?text:'点击选择'}}</view>
-					<uni-data-picker :localdata="items" popup-title="请选择班级" @change="onchange" @nodeclick="onnodeclick"></uni-data-picker>
 				</view>
 				<view class="form-item">
 					<text>上传照片</text>
 					<ImgUpload ref="imgUpload"></ImgUpload>
 				</view>
 
-				<view class="uni-btn-v">
-					<button form-type="submit">确定</button>
-					<button type="default" form-type="reset">返回</button>
+				<view class="foter">
+					<button form-type="submit" type="primary">确定</button>
 				</view>
 			</form>
 
@@ -46,94 +44,41 @@
 
 <script>
 	import ImgUpload from "@/components/img-upload"
-	import UniDataPicker from "@/components/uni-data-picker/uni-data-picker.vue"
+	import {pharmacySave} from "@/api/auth"
 	export default {
-		components: {
-			ImgUpload,
-			UniDataPicker
-		},
+		components: {ImgUpload},
 		data() {
 			return {
-				// name
-				// 终端名称
-				// invitationCode
-				// 业务员邀请码(扫码进来注册时需填写）
-				// address
-				// 终端详细地址
-				// addressProvince
-				// 终端省
-				// addressCity
-				// 终端市
-				// addressArea
-				// 终端区
-				// contactPer
-				// 联系人
-				// gender
-				// 性别
-				// merchantPhone
-				// 商户联系号码
-				// photoUrls
-				// 营业执照等照片 多张已逗号隔开
-				items: [{
-						text: "一年级",
-						value: "1-0",
-						children: [{
-								text: "1.1班",
-								value: "1-1"
-							},
-							{
-								text: "1.2班",
-								value: "1-2"
-							}
-						]
-					},
-					{
-						text: "二年级",
-						value: "2-0"
-					},
-					{
-						text: "三年级",
-						value: "3-0"
-					}
-				],
-				modol: {
-					address: null,
-					addressProvince: null,
-					addressCity: null,
-					addressArea: null,
-				},
-				text: null
+			}
+		},
+		computed:{
+			text(){
+				const data=this.$store.getAddrsInfo();
+				return data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
 			}
 		},
 		methods: {
-			onchange(e) {
-				console.log(e)
-			},
-			onnodeclick(e) {
-				console.log(e)
-			},
 			addr() {
-				const that = this;
-				if (that.text) return;
-				uni.getLocation({
-					type: 'wgs84',
-					geocode: true,
-					success: function(res) {
-						that.modol = {
-							address: res.street,
-							addressProvince: res.province,
-							addressCity: res.city,
-							addressArea: res.district,
-						}
-						that.text = res.province + res.city + res.district + res.street
-						console.log(res)
-					}
+				uni.navigateTo({
+				  url: '/pages/address/index',
 				});
 			},
 			formSubmit(e) {
-				let imgList = this.$refs.imgUpload.getData();
-				let formdata = e.detail.value;
-				console.log(this.$store.getUserInfo(), this.$store.getLoginInfo(), formdata)
+				const imgList = this.$refs.imgUpload.getData();
+				const formData = e.detail.value;
+				const addrData = this.$store.getAddrsInfo();
+				console.log(imgList, formData,addrData);
+				const obj={
+					invitationCode: '123456',
+					...addrData,
+					address: this.text,
+					...formData,
+					photoUrls: imgList.join(',')
+				};
+				console.log(obj);
+				pharmacySave(obj).then(({data})=>{
+					console.log('pharmacySave',data);
+				})
 			}
 		}
 	}
@@ -141,7 +86,7 @@
 
 <style lang="scss" scoped>
 	.qualifications {
-		padding: 20rpx;
+		padding: 20rpx 20rpx 20px 20rpx;
 
 		.form-item {
 			text {
@@ -149,24 +94,31 @@
 				margin-bottom: 10rpx;
 				display: inline-block;
 			}
-
+			
 			.radio-first {
 				margin-right: 30rpx;
 			}
 
 			input {
-				border: 1rpx solid #dae0d8;
-				border-radius: 10rpx;
-				margin-bottom: 10rpx;
+				border: 1rpx solid #e5e5e5;
+				border-radius: 5px;
+				margin-bottom: 10px;
+				font-size: 14px;
+				height: 40px;
+				line-height: 38px;
+				padding:0 5px;
 			}
 		}
-
+		.gender{
+			margin-bottom: 10px;
+		}
 		.addr {
 			display: flex;
 			align-items: center;
-
+			margin-bottom: 10px;
 			text {
 				margin-right: 30rpx;
+				margin-bottom: 0;
 			}
 		}
 	}

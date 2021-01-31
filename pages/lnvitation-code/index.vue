@@ -1,9 +1,10 @@
 <template>
 	<view class="lnvitation-code">
 		<form @submit="onSubmit">
-			<view class="title">可自动聚焦的input</view>
-			<input class="uni-input" focus placeholder="自动获得焦点" name="input" type="number" confirm-type="done"/>
-			<button form-type="submit" size="mini" type="primary">Submit</button>
+			<view class="title">下单请联系客服，获取邀请码</view>
+			<view>客服电话：13723823333</view>
+			<input class="uni-input" focus name="invitationCode" type="number" confirm-type="done"/>
+			<button form-type="submit" size="mini" type="primary">确认</button>
 		</form>
 		<!-- <form @submit="onSubmit">
 			<comp-input name="test" v-model="testValue" focus></comp-input>
@@ -13,6 +14,7 @@
 </template>
 
 <script>
+	import {pharmacyBind} from '@/api/auth';
 	export default {
 		data() {
 			return {
@@ -21,8 +23,16 @@
 		},
 		methods: {
 			onSubmit(e) {
+				const that=this;
 				var formdata = e.detail.value
 				console.log(formdata)
+				pharmacyBind({
+					"pharmacyId": 1,
+					"invitationCode": formdata.invitationCode
+				}).then(({data})=>{
+					console.log('data');
+						that.$tips('成功', '绑定成功');
+				})
 			},
 		}
 	}

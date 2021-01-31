@@ -18,14 +18,21 @@ export const getDict = (url,parmas) => fetch('get', `/wx/mini/dict/${url}`, parm
 export const order = (parmas) => fetch('post', `/wx/mini/order`, parmas);
 //获取全部订单列表
 export const getOrderPage = (parmas) => fetch('get', `/wx/mini/order/page`, parmas);
-//上传文件
-export const uploadFile = (parmas) => fetch('post', '', parmas, {
-	headers: {
-		'Content-Type': 'multipart/form-data'
-	},
-	url: `http://api.llczf.com/api-file/file/upload/cdd`
-});
-export const getPlace = () => wx.request('json/response.json');
+//终端小程序提交资质审核
+export const pharmacySave = (parmas) => fetch('post', `/wx/mini/pharmacy/save`, parmas);
+//终端绑定业务员
+export const pharmacyBind = (parmas) => fetch('post', `/wx/mini/pharmacy/bind`, parmas);
+
+//获取终端详情
+export const getPharmacy = (val) => fetch('get', `/wx/mini/pharmacy/${val}`);
+
+//获取订阅消息模板消息ID列表
+export const getSubscribe = (parmas) => fetch('get', `/wx/wxmini/subscribe`, parmas);
+//获取业务员邀请码小程序二维码
+export const getBusiness = (val) => fetch('get', `/wx/mini/business/${val}`);
+//业务员小程序获取终端列表
+export const getPharmacyList = (val) => fetch('get', `/wx/mini/pharmacy/list/${val}`);
+
 
 export default {
 	getDict,
@@ -36,7 +43,10 @@ export default {
 	getCartPage,
 	order,
 	getOrderPage,
-	uploadFile,
 	wxminiSync,
-	getPlace
+	pharmacyBind,
+	pharmacySave,
+	getSubscribe,
+	getBusiness,
+	getPharmacy
 };

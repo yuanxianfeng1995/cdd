@@ -61,6 +61,7 @@
 				return this.list
 			},
 			delete(){
+				console.log('delete')
 				this.list=this.list.filter((item)=>!item.radio)
 			},
 			cut(index){

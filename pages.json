@@ -1,24 +1,7 @@
 {
 	"darkmode": true,
 	"themeLocation": "theme.json",
-	"pages": [{
-			"path": "pages/qualifications/index",
-			"style": {
-				"navigationBarTitleText": "资质审核"
-			}
-		},
-		{
-			"path": "pages/order/index",
-			"style": {
-				"navigationBarTitleText": "订单"
-			}
-		},
-		{
-			"path": "pages/home/index",
-			"style": {
-				"navigationBarTitleText": "首页"
-			}
-		},
+	"pages": [
 		{
 			"path": "pages/index/index",
 			"style": {
@@ -26,27 +9,9 @@
 			}
 		},
 		{
-			"path": "pages/login/index",
+			"path": "pages/payment/index",
 			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		},
-		{
-			"path": "pages/place-an-order/index",
-			"style": {
-				"navigationBarTitleText": "审核订单"
-			}
-		},
-		{
-			"path": "pages/contact/index",
-			"style": {
-				"navigationBarTitleText": "联系客服"
-			}
-		},
-		{
-			"path": "pages/lnvitation-code/index",
-			"style": {
-				"navigationBarTitleText": "输入邀请码"
+				"navigationBarTitleText": "已下单"
 			}
 		},
 		{
@@ -56,21 +21,45 @@
 			}
 		},
 		{
-			"path": "pages/mine/index",
+			"path": "pages/lnvitation-code/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "输入邀请码"
 			}
 		},
 		{
-			"path": "pages/shopping-cart/index",
+			"path": "pages/qualifications/index",
 			"style": {
-				"navigationBarTitleText": "购物车"
+				"navigationBarTitleText": "资质审核"
 			}
 		},
 		{
-			"path": "pages/track/index",
+			"path": "pages/address/index",
 			"style": {
-				"navigationBarTitleText": "跟踪"
+				"navigationBarTitleText": "新增地址"
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/salesman/order/index",
+			"style": {
+				"navigationBarTitleText": "订单"
+			}
+		},
+		{
+			"path": "pages/place-an-order/index",
+			"style": {
+				"navigationBarTitleText": "核对订单"
+			}
+		},
+		{
+			"path": "pages/contact/index",
+			"style": {
+				"navigationBarTitleText": "联系客服"
 			}
 		}
 	],
