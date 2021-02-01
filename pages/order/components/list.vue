@@ -1,5 +1,5 @@
 <template>
-	<scroll-view   class="order-list"  scroll-top="60" scroll-y @scrolltolower="scroll" >
+	<scroll-view  class="order-list" scroll-y @scrolltolower="scroll" lower-threshold="0">
 		<view class="card" v-for="(item,index) in data" :key="index" @click="itemClick(item)">
 			<view class="flex-row-space-between">
 				<text>{{item.createTime}}</text>
@@ -18,6 +18,7 @@
 				<button @click.stop="ok(item)" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">再次购买</button>
 			</view>
 		</view>
+		<view class="cu-load loading animation-scale-up" v-if="loading"></view>
 	</scroll-view>
 </template>
 
@@ -57,10 +58,24 @@
 				default: [],
 			},
 		},
+		data(){
+			return {
+				loading: true
+			}
+		},
+		onPullDownRefresh() {
+			console.log('list onPullDownRefresh')
+			uni.stopPullDownRefresh();
+		},
 		methods: {
 			scroll(e){
 				console.log('scroll',e)
-				this.$emit('scrollBottom')
+				this.loading=true;
+				this.$emit('scrollBottom',()=>{
+					setTimeout(()=>{
+						this.loading=false;
+					},400)
+				})
 			},
 			itemClick(item){
 				this.$emit('itemClick', item)
@@ -79,13 +94,17 @@
 	.order-list{
 		position: fixed;
 		width: 100%;
-		top: 60px;
+		top: 44px;
 		z-index: 2;
 		padding-top: 60px;
+		padding-bottom: 90px;
 		height: 100%;
 		@media (prefers-color-scheme: dark) {
 			background-color: #9e9e9e;
 		}
+	}
+	.loading{
+		padding-bottom: 0px;
 	}
 	.card {
 		background-color: var(--background-color-0);

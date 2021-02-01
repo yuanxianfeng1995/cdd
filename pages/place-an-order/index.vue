@@ -1,12 +1,48 @@
 <template>
-	<Container style="padding-top: 50rpx;" title="核对订单">
-		<view class="place-an-order">
-			<view class="addr" v-if="userType==='1'">
-				<text>地址</text>
-				<view class="select" @click="addr">{{text?text:'点击选择'}}</view>
-			</view>
+	<Container style="padding-top: 50rpx;" title="核对订单"  :style="[{backgroundColor:'var(--background-color-1)'}]">
+		<view class="place-an-order" :style="[{backgroundColor:'var(--background-color-1)'}]">
 			<List :data="orderData.orderDetails||[]"></List>
-			<view class="content-text">配送时间：当天发货，预计次日送达。</view>
+			
+			<view class="addr-content">
+				<form @submit="formSubmit">
+					<view class="form-item">
+						<text>配送时间：</text>
+						<view>当天发货，预计次日送达。</view>
+					</view>
+					<view class="form-item">
+						<text>配送方式：</text>
+						<view class="form-item gender">
+							<radio-group name="deliveryType" @change="deliveryTypeChange">
+								<label class="radio" v-for="(item1,index) of deliveryTypeList" :key="item1.updateTime">
+									<radio :value="item1.value"  :checked="index===0" style="transform:scale(0.7);" /><text>{{item1.description}}</text>
+								</label>
+							</radio-group>
+						</view>
+					</view>
+					<template v-if="checked+''==='1'">
+						<view class="form-item">
+							<text>收货地址：</text>
+							<uni-data-picker class="form-item-picker" :localdata="items" popup-title="请选择地址" @change="onchange"></uni-data-picker>
+						</view>
+						<view class="form-item">
+							<text>收货人：</text>
+							<input name="receiver" type="text" :value="userData.receiver"/>
+						</view>
+					</template>
+					<view class="form-item" v-else>
+						<text>提货地点：</text>
+						<picker class="form-item-picker" @change="PickerChange" :value="index" :range="pickerData">
+							<view class="picker">
+								<text class="text" style="padding-right:16rpx">
+									{{index>-1?pickerData[index]:'点击选择'}}
+								</text>
+								<Arrow style-inner="border-color:#fff;border-width: 4rpx 4rpx 0 0;" :size="20" />
+							</view>
+						</picker>
+					</view>
+					
+				</form>
+			</view>
 			<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(env(safe-area-inset-bottom) / 2);width:100%;">
 				<view>
 					<text>订单金额</text>
@@ -21,23 +57,37 @@
 <script>
 	import {
 		order,
-		getSubscribe
+		getSubscribe,
+		getPickUp,
+		getDict
 	} from '@/api/auth';
 	import List from '@/pages/shopping-cart/components/list.vue';
+	import response from "@/api/response.js"
+	import UniDataPicker from "@/components/uni-data-picker/uni-data-picker.vue"
 	export default {
 		components: {
-			List
+			List,
+			UniDataPicker
 		},
 		data() {
 			return {
+				items: response,
 				modol: {},
 				text: null,
-				tmplIds: []
+				tmplIds: [],
+				deliveryTypeList: [],
+				checked: '1',
+				index: 0,
+				addr: null,
+				pickerData: []
 			}
 		},
 		computed:{
 			orderData(){
 				return this.$store.getOrder()
+			},
+			userData(){
+				return this.$store.getUserInfo()
 			},
 			userType(){
 			  return this.$store.getLoginInfo()?.data?.userType||'1'
@@ -45,15 +95,38 @@
 		},
 		onShow() {
 			this.getSubscribe();
+			this.getDeliveryTypeList();
+			this.getPickUp();
 			const data=this.$store.getAddrsInfo();
-			console.log('onShow',this.$store.getAddrsInfo())
 			this.text=data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
 		},
 		methods: {
-			addr(){
+			getPickUp(){
+				getPickUp({tenantId: this.$store.getLoginInfo()?.data?.tenantId}).then(({data})=>{
+					console.log('getPickUp',data)
+				})
+			},
+			PickerChange(e) {
+				this.index = e.detail.value;
+			},
+			deliveryTypeChange(evt){
+				console.log('deliveryTypeChange',evt)
+				this.checked=evt.detail.value;
+			},
+			formSubmit(e){
+				const data = e.detail.value;
+				console.log(data,this.modol)
+			},
+			addrSelect(){
 				uni.navigateTo({
 				  url: '/pages/address/index',
 				});
+			},
+			getDeliveryTypeList(){
+				getDict('delivery_type').then(({data})=>{
+					console.log('getDict delivery_type',data)
+					this.deliveryTypeList=data.data||[];
+				})
 			},
 			ok() {
 				console.log('this.$store.getAddrsInfo()',this.$store.getAddrsInfo())
@@ -165,6 +238,7 @@
 
 <style lang="scss" scoped>
 	.place-an-order {
+		padding-bottom: 100px;
 		.addr {
 			display: flex;
 			align-items: center;
@@ -175,9 +249,43 @@
 				margin-bottom: 0;
 			}
 		}
-		.content-text{
+		.addr-content{
 			margin-top: 10px;
 			margin-left: 20rpx;
+		}
+		.form-item{
+			display: flex;
+			align-items: center;
+			font-size: 30rpx;
+			margin-bottom: 10px;
+			>text {
+				font-size: 30rpx;
+				margin-bottom: 10rpx;
+				display: inline-block;
+				width: 150rpx;
+				text-align: right;
+			}
+			
+			input {
+				border: 1rpx solid #e5e5e5;
+				border-radius: 10rpx;
+				font-size: 30rpx;
+				height: 26px;
+				line-height: 26px;
+				padding:0 5px;
+				flex: 1;
+				margin-right: 5%
+			}
+		}
+		.form-item-picker{
+			flex: 1;
+			margin-right: 5%
+			::v-deep{
+				.input-value{
+					width: 100%;
+					line-height: 26px!important;
+				}
+			}
 		}
 	}
 </style>

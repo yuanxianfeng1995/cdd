@@ -78,15 +78,22 @@ export default {
 		console.log('onShow')
 		this.getOrderPage();
 	},
+	onPullDownRefresh() {
+		console.log('onPullDownRefresh')
+		uni.stopPullDownRefresh();
+	},
   methods: {
 		getDict(){
 			getDict('order_status_type').then(({data})=>{
 				console.log('getDict',data)
 			})
 		},
-		scrollBottom(){
+		scrollBottom(next){
 			this.pageNo=this.pageNo+10;
-			if(!this.noData) this.getOrderPage()
+			if(!this.noData) {
+				this.getOrderPage();
+				next();
+			}
 		},
     tabSelect(value) {
       this.current = value;

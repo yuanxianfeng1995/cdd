@@ -77,8 +77,7 @@
 			ShoppingCart,
 			Order
 		},
-		onPullDownRefresh(e) {
-			console.log('onPullDownRefresh',e)
+		onPullDownRefresh() {
 			uni.stopPullDownRefresh();
 		},
 		data() {
@@ -97,7 +96,8 @@
 				shoppingCartCount: 0,
 				loding: true,
 				time: null,
-				searchContent: null
+				searchContent: null,
+				count: 0
 			};
 		},
 		computed: {
@@ -111,11 +111,16 @@
 		},
 		watch:{
 			current(val){
-				console.log('watch',val,this.time)
+				console.log('watch',val,this.time,this.list2)
 				this.list=[];
-				clearTimeout(this.time);
+				clearInterval(this.time);
 				this.time=null;
-				if(val==='home') this.appendArr()
+				this.count=0;
+				if(val==='home') {
+					this.list= this.list2.slice(this.count,this.count+3);
+					this.count=this.count+3;
+					this.handleList();
+				}
 			}
 		},
 		onShow(){
@@ -150,9 +155,7 @@
 			getPharmacyList(){
 				let info = this.$store.getLoginInfo()?.data;
 				if(!info) return;
-				console.log('this.$store.getLoginInfo()',this.$store.getLoginInfo())
 				getPharmacyList(info.userId).then(({data})=>{
-					console.log('getPharmacyList data',data)
 					this.picker=data?.data;
 					this.$store.setPharmacy(this.picker[0])
 				})
@@ -168,9 +171,16 @@
 			nameChange(e){
 				this.searchContent=e.detail.value;
 			},
+			handleList(){
+				const that=this;
+				that.time=setInterval(()=>{
+					if(that.list.length>=that.list2.length) clearInterval(that.time);
+					that.list.push(...that.list2.slice(that.count,that.count+3))
+					that.count=that.count+3;
+				},400);
+			},
 			async getMini() {
 				const that = this;
-				// let info = this.$store.getLoginInfo()?.data;
 				getMini().then(({
 					data
 				}) => {
@@ -192,23 +202,14 @@
 					}
 					that.list2= list;
 					that.list3= list2;
-					that.appendArr();
+					that.list= list.slice(that.count,that.count+3);
+					that.count=that.count+3;
+				  that.handleList();
 					that.listCur = that.list[0];
 					that.$loading.close()
 				}).finally((e)=>{
 					that.$loading.close()
 				})
-			},
-			appendArr(){
-				const that=this;
-					if(!this.time){
-						console.log(1)
-						that.list=JSON.parse(JSON.stringify(that.list3));
-						this.time=setTimeout(()=>{
-							console.log(2)
-							that.list=JSON.parse(JSON.stringify(that.list2));
-						},5000)
-					}
 			},
 			getCartPage() {
 				const that = this;
@@ -240,7 +241,6 @@
 					});
 					return;
 				};
-				console.log('data',data)
 				cart({
 					"userId": data.userId,
 					"userType": data.userType,
@@ -311,7 +311,7 @@
 			},
 		},
 		destroyed() {
-			clearTimeout(this.time)
+			clearInterval(this.time)
 		}
 	};
 </script>

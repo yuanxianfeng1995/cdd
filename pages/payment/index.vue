@@ -1,5 +1,5 @@
 <template>
-	<Container style="padding-top: 50rpx;" :title="orderData.title||'已下单'">
+	<Container style="padding-top: 50rpx;" :title="orderData.title||'已下单'" :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view class="place-an-order">
 			<view class="addr">
 				<text>地址</text>

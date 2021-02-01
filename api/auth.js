@@ -32,7 +32,10 @@ export const getSubscribe = (parmas) => fetch('get', `/wx/wxmini/subscribe`, par
 export const getBusiness = (val) => fetch('get', `/wx/mini/business/${val}`);
 //业务员小程序获取终端列表
 export const getPharmacyList = (val) => fetch('get', `/wx/mini/pharmacy/list/${val}`);
-
+//获取用户信息
+export const getUserInfo = (parmas) => fetch('get', `/wx/mini/userInfo`, parmas);
+//获取收货点列表
+export const getPickUp = (parmas) => fetch('get', `/wx/mini/pickUp`, parmas);
 
 export default {
 	getDict,
@@ -48,5 +51,6 @@ export default {
 	pharmacySave,
 	getSubscribe,
 	getBusiness,
-	getPharmacy
+	getPharmacy,
+	getUserInfo
 };

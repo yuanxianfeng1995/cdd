@@ -20,7 +20,7 @@
 			<template v-if="userType+''==='1'">
 				<row-button
 					label="累计采购"
-					value="--元"
+					:value="(data.totalMoney||'--')+'元'"
 				/>
 				<row-button
 					label="咨询客服"
@@ -44,11 +44,11 @@
 			<template v-else>
 				<row-button
 					label="订单笔数"
-					value="--笔"
+					:value="(data.total||'--')+'笔'"
 				/>
 				<row-button
 					label="订单金额"
-					value="--元"
+					:value="(data.totalMoney||'--')+'元'"
 				/>
 				<row-button
 					label="查看订单"
@@ -74,8 +74,7 @@
 
 <script>
 import RowButton from '@/components/row-button';
-import avatarUrl from '@/static/1.png';
-import {getPharmacy} from "@/api/auth.js"
+import {getUserInfo} from "@/api/auth.js"
 export default {
   components: {
     RowButton,
@@ -83,29 +82,27 @@ export default {
   data() {
     return {
 			userInfo:this.$store.getUserInfo()?.userInfo,
+			data: {}
     };
   },
 	async onReady() {
 		console.log()
-		this.userInfo=this.$store.getUserInfo()?.userInfo;
+		const id=this.$store.getLoginInfo()?.data?.userId;
+		if(id) {
+			this.userInfo=this.$store.getUserInfo()?.userInfo;
+			this.getUserInfo();
+		}
 	},
   methods: {
-		getPharmacy(){
+		getUserInfo(){
 			const that=this;
-			const id=that.$store.getLoginInfo()?.data?.userId;
-			const obj=this.$store.getUserInfo()?.userInfo||{};
-			if(!id) {
-				that.$loading.close()
-				return;
-			};
-			getPharmacy(id).then(({data})=>{
-				that.data={
-					...data.data||{},
-					...obj,
-				}
-				that.$loading.close()
+			const loginInfo=that.$store.getLoginInfo()?.data;
+			getUserInfo({
+				userId:loginInfo.userId,
+				userType:loginInfo.userType
+			}).then(({data})=>{
+				that.data=data.data||{};
 			}).finally((e)=>{
-				that.$loading.close()
 			})
 		},
 		qualifications(){
