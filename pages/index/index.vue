@@ -2,7 +2,7 @@
 	<Container style="padding-top: 100rpx;" v-model="current" tabbar :is-back="false"
 	 :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<template v-if="current==='home'">
-			<view slot="action" v-if="userType+''!=='1'">
+			<view slot="action" v-if="userType+''!=='1'&&pickerData.length>0">
 				<picker @change="PickerChange" :value="index" :range="pickerData">
 					<view class="picker">
 						<text class="text" style="padding-right:16rpx">
@@ -177,7 +177,7 @@
 					if(that.list.length>=that.list2.length) clearInterval(that.time);
 					that.list.push(...that.list2.slice(that.count,that.count+3))
 					that.count=that.count+3;
-				},400);
+				},1000);
 			},
 			async getMini() {
 				const that = this;

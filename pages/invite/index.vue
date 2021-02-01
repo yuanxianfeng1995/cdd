@@ -1,10 +1,10 @@
 <template>
   <container title="我的邀请码">
     <view class="content full" :style="[{backgroundColor:'var(--background-color-1)'}]">
-      <view class="img-wrap">
+      <view class="img-wrap" v-if="src">
         <image
           class="img"
-          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.haichaninfo.com%2Fapi%2Fqrcode.png.php%3Fauth%3Dhttp%3A%2F%2Fwww.haichaninfo.com%2Fxinwen%2Fshow-8401.html&refer=http%3A%2F%2Fwww.haichaninfo.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613515078&t=2f8cb22d60fb063f11233b86fe7579c5"
+          src="src"
           @load="load"
           @error="error"
         />
@@ -18,7 +18,9 @@ import loading from '@/utils/loading';
 	import {getBusiness} from "@/api/auth"
 export default {
   data() {
-    return {};
+    return {
+			src: null
+		};
   },
   onLoad() {
     loading.open();
@@ -26,10 +28,12 @@ export default {
   },
   methods: {
 		getBusiness(){
+			const that=this;
 			let userId=this.$store.getLoginInfo()?.data?.userId;
 			if(!userId) return;
-			getBusiness(userId).then(({data})=>{
-				consoel.log('data',data);
+			getBusiness(userId).then((data)=>{
+				console.log('data',data);
+				that.src=data;
 			}).finally((e)=>{
 				loading.close()
 			})

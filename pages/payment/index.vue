@@ -1,15 +1,12 @@
 <template>
 	<Container style="padding-top: 50rpx;" :title="orderData.title||'已下单'" :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view class="place-an-order">
-			<view class="addr">
-				<text>地址</text>
-				<view class="select">{{text}}</view>
-			</view>
 			<List :data="orderData.orderDetails||[]"></List>
 			<view class="dh-text">
 				<view class="content-text">订单编号：{{orderData.dh}}</view>
 				<view class="content-text">交易号：    {{orderData.payNo||''}}</view>
 				<view class="content-text">创建时间：{{orderData.createTime}}</view>
+				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
 				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
 			</view>
 			
@@ -26,7 +23,7 @@
 
 <script>
 	import {
-		order,
+		getOrderInfo,
 	} from '@/api/auth';
 	import List from '@/pages/shopping-cart/components/list.vue';
 	export default {
@@ -46,11 +43,16 @@
 			},
 			text(){
 				const data=this.$store.getAddrsInfo();
-				return data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
+				return data?data.address:null;
 			}
 		},
 		methods: {
-			ok() {
+			getOrderInfo(){
+				const data=this.$store.getOrder();
+				if(!data.dh) return;
+				getOrderInfo(data.dh).then(({data})=>{
+					console.log('getOrderInfo',data);
+				})
 			}
 		}
 	}
@@ -70,6 +72,8 @@
 		}
 		.dh-text{
 			margin-top: 30px;
+			padding: 20px;
+			background-color: var(--background-color-0);
 		}
 		.content-text{
 			margin-top: 10px;

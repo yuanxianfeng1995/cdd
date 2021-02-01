@@ -78,6 +78,7 @@
 				console.log(obj);
 				pharmacySave(obj).then(({data})=>{
 					console.log('pharmacySave',data);
+					this.$store.setAddrsInfo(obj);
 				})
 			}
 		}

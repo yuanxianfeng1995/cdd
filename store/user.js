@@ -1,18 +1,18 @@
 import { getItem, setItem } from './base';
-export const setUserInfo = (data = {}) => setItem('userInfo', data);
-export const getUserInfo = () => getItem('userInfo');
+export const setUserInfo = (data = {}) => setItem('userInfo', data, true);
+export const getUserInfo = () => getItem('userInfo', true);
 
-export const setLoginInfo = (data = {}) => setItem('loginInfo', data);
-export const getLoginInfo = () => getItem('loginInfo');
+export const setLoginInfo = (data = {}) => setItem('loginInfo', data, true);
+export const getLoginInfo = () => getItem('loginInfo', true);
 
 export const setRequestSubscribeMessage = (data = {}) => setItem('requestSubscribeMessage', data, true);
 export const getRequestSubscribeMessage = () => getItem('requestSubscribeMessage', true);
 
-export const setOrder = (data = {}) => setItem('order', data);
-export const getOrder = () => getItem('order');
+export const setOrder = (data = {}) => setItem('order', data, true);
+export const getOrder = () => getItem('order', true);
 
-export const setPharmacy = (data = {}) => setItem('pharmacy', data);
-export const getPharmacy = () => getItem('pharmacy');
+export const setPharmacy = (data = {}) => setItem('pharmacy', data, true);
+export const getPharmacy = () => getItem('pharmacy', true);
 export default {
   setUserInfo,
   getUserInfo,

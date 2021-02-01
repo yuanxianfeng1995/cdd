@@ -3,17 +3,17 @@
 	"themeLocation": "theme.json",
 	"pages": [
 		{
-			"path": "pages/place-an-order/index",
-			"style": {
-				"navigationBarTitleText": "核对订单"
-			}
-		},
-		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "首页"
 			}
 		},
+		{
+			"path": "pages/place-an-order/index",
+			"style": {
+				"navigationBarTitleText": "核对订单"
+			}
+		},		
 		{
 			"path": "pages/payment/index",
 			"style": {

@@ -18,6 +18,10 @@ export const getDict = (url,parmas) => fetch('get', `/wx/mini/dict/${url}`, parm
 export const order = (parmas) => fetch('post', `/wx/mini/order`, parmas);
 //获取全部订单列表
 export const getOrderPage = (parmas) => fetch('get', `/wx/mini/order/page`, parmas);
+//获取全部订单列表
+export const getOrderInfo = (val) => fetch('get', `wx/mini/order/${val}`);
+
+
 //终端小程序提交资质审核
 export const pharmacySave = (parmas) => fetch('post', `/wx/mini/pharmacy/save`, parmas);
 //终端绑定业务员
@@ -52,5 +56,6 @@ export default {
 	getSubscribe,
 	getBusiness,
 	getPharmacy,
-	getUserInfo
+	getUserInfo,
+	getOrderInfo
 };
