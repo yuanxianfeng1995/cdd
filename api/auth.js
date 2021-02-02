@@ -41,6 +41,10 @@ export const getUserInfo = (parmas) => fetch('get', `/wx/mini/userInfo`, parmas)
 //获取收货点列表
 export const getPickUp = (parmas) => fetch('get', `/wx/mini/pickUp`, parmas);
 
+//修改小程序订单状态
+export const orderUpdate = (parmas) => fetch('put', `/wx/mini/order/update`, parmas);
+
+
 export default {
 	getDict,
 	login,
@@ -57,5 +61,6 @@ export default {
 	getBusiness,
 	getPharmacy,
 	getUserInfo,
-	getOrderInfo
+	getOrderInfo,
+	orderUpdate
 };

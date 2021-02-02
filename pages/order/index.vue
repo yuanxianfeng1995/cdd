@@ -47,7 +47,7 @@ export default {
         { label: '已完成', value: 3 },
 				{ label: '已取消', value: 4 },
       ]:[
-        { label: '全部', value: 0 },
+        { label: '全部', value: 'all' },
         { label: '待付款', value: 1 },
         { label: '待配送', value: 5 },
         { label: '已下单', value: 0 },
@@ -68,6 +68,9 @@ export default {
 		})
 	},
   computed: {
+		userType(){
+		  return this.$store.getLoginInfo()?.userType||'1'
+		},
     style() {
       return `margin-top:-${
         this.CustomBar - 100
@@ -102,7 +105,7 @@ export default {
     },
 		getOrderPage(){
 			const that=this;
-			let data = that.$store.getLoginInfo()?.data;
+			let data = that.$store.getLoginInfo();
 			if(!(data&&data.userId)) {
 				that.$loading.close()
 				return
@@ -116,11 +119,11 @@ export default {
 			}).then(({data})=>{
 				console.log('getOrderPage',data)
 				if(that.data.length>0){
-					if((data?.data?.list||[]).length===0) {
+					if(((data?.data?.list)||[]).length===0) {
 						that.noData=true;
-						return;
+					}else{
+						that.data.push(data?.data?.list)
 					}
-					that.data.push(data?.data?.list)
 				}else{
 					that.data=data?.data?.list||[]
 				}
@@ -131,15 +134,11 @@ export default {
 				})
 		},
 		ok(item){
-			console.log('ok',item)
-			this.$store.setOrder(item);
 			uni.navigateTo({
 				url: '/pages/place-an-order/index?dh='+item.dh,
 			})
 		},
 		itemClick(item){
-			console.log('ok',item)
-			this.$store.setOrder(item);
 			uni.navigateTo({
 				url: '/pages/payment/index?dh='+item.dh,
 			})

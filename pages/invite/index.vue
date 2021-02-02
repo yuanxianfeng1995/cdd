@@ -29,7 +29,7 @@ export default {
   methods: {
 		getBusiness(){
 			const that=this;
-			let userId=this.$store.getLoginInfo()?.data?.userId;
+			let userId=this.$store.getLoginInfo()?.userId;
 			if(!userId) return;
 			getBusiness(userId).then((data)=>{
 				console.log('data',data);

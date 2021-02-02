@@ -2,14 +2,6 @@
 	<Container style="padding-top: 50rpx;" tabbar title="新增地址">
 		<view class="address">
 			<form @submit="formSubmit">
-				<view class="form-item">
-					<text>收货人：</text>
-					<input name="receiver" type="text" />
-				</view>
-				<view class="form-item">
-					<text>收货人电话：</text>
-					<input name="receiverTel"  type="number"/>
-				</view>
 				<view class="form-item addr">
 					<text>收货地址</text>
 					<uni-data-picker :localdata="items" popup-title="请选择地址" @change="onchange"></uni-data-picker>
@@ -17,16 +9,6 @@
 				<view class="form-item">
 					<text>详细地址：</text>
 					<input name="address" type="text" />
-				</view>
-				<view>
-					<text>提货方式</text>
-					<view class="form-item gender">
-						<radio-group name="deliveryType">
-							<label class="radio" v-for="(item1,index) of deliveryTypeList" :key="item1.updateTime">
-								<radio :value="item1.value"  :checked="index===0" style="transform:scale(0.7);" /><text>{{item1.description}}</text>
-							</label>
-						</radio-group>
-					</view>
 				</view>
 				<view class="address-footer">
 					<button type="primary" form-type="submit">保存地址</button>

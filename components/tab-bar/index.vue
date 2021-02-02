@@ -42,7 +42,7 @@
 		},
 		computed:{
 			userType(){
-				return this.$store.getLoginInfo()?.data?.userType||'1'
+				return this.$store.getLoginInfo()?.userType||'1'
 			},
 		},
 		created() {

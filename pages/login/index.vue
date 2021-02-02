@@ -56,11 +56,11 @@
 					"iv": parms.iv,
 					"phoneEncryptedData": parms.phoneEncryptedData,
 					"phoneIv": parms.phoneIv,
-				}).then((val) => {
+				}).then((res) => {
 					if(res.resCode===0){
 						that.$tips('成功',res.resMsg);
-						console.log('login', val)
-						setLoginInfo(val.data.data)
+						console.log('login', res)
+						setLoginInfo(res.data.data)
 						that.$loading.close()
 						that.$tips('成功', '登陆成功');
 						uni.navigateTo({

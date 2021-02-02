@@ -1,6 +1,7 @@
 <template>
-	<Container style="padding-top: 50rpx;" :title="orderData.title||'已下单'" :style="[{backgroundColor:'var(--background-color-1)'}]">
+	<Container style="padding-top: 50rpx;" title="订单详情" :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view class="place-an-order">
+			<view class="status-text">{{orderData.status|format}}</view>
 			<List :data="orderData.orderDetails||[]"></List>
 			<view class="dh-text">
 				<view class="content-text">订单编号：{{orderData.dh}}</view>
@@ -8,20 +9,26 @@
 				<view class="content-text">创建时间：{{orderData.createTime}}</view>
 				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
 				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
-				<view class="content-text">配送方式：{{deliveryType}}</view>
-				<view class="content-text">收货地址：{{orderData.orderAddressVO?orderData.orderAddressVO.address:''}}</view>
-				<template v-if="orderData.orderAddressVO?orderData.orderAddressVO.deliveryType==='1':false">
-					<view class="content-text">收货人：{{orderData.orderAddressVO?orderData.orderAddressVO.receiver:''}}</view>
-					<view class="content-text">联系方式：{{orderData.orderAddressVO?orderData.orderAddressVO.receiverTel:''}}</view>
+				
+				<template v-if="orderData.orderAddressVO">
+					<view class="content-text">配送方式：{{deliveryType}}</view>
+					<view class="content-text">收货地址：{{orderData.orderAddressVO?orderData.orderAddressVO.address:''}}</view>
+					<template v-if="orderData.orderAddressVO?orderData.orderAddressVO.deliveryType==='1':false">
+						<view class="content-text">收货人：{{orderData.orderAddressVO?orderData.orderAddressVO.receiver:''}}</view>
+						<view class="content-text">联系方式：{{orderData.orderAddressVO?orderData.orderAddressVO.receiverTel:''}}</view>
+					</template>
 				</template>
 			</view>
 			
 			<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(env(safe-area-inset-bottom) / 2);width:100%;">
 				<view>
 					<text>订单金额</text>
-					<text style="color:red;" v-if="orderData.totalMoney">￥{{orderData.totalMoney}}</text>
+					<text style="color:red;" v-if="orderData.payMoney||orderData.totalMoney">￥{{orderData.payMoney||orderData.totalMoney}}</text>
 				</view>
-				<button @click="ok"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">联系客服</button>
+				<view class="btn-group">
+					<button @click="ok"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">联系客服</button>
+					<button @click="btnClick" v-if="orderData.status+''==='1'||orderData.status+''==='2'"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name}}</button>
+				</view>
 			</view>
 		</view>
 	</Container>
@@ -30,7 +37,8 @@
 <script>
 	import {
 		getOrderInfo,
-		getDict
+		getDict,
+		orderUpdate
 	} from '@/api/auth';
 	import List from '@/pages/shopping-cart/components/list.vue';
 	export default {
@@ -41,14 +49,8 @@
 			return {
 				modol: {},
 				tmplIds: [],
-				orderData: {}
-			}
-		},
-		computed:{
-			deliveryType(){
-				let data=this.orderData?.orderAddressVO||{}
-				console.log('deliveryType',this.deliveryType.find((item)=>item.value+''===data.deliveryType+''))
-				return this.deliveryType.find((item)=>item.value+''===data.deliveryType+'')
+				orderData: {},
+				deliveryType: null
 			}
 		},
 		async onLoad(option) {
@@ -56,7 +58,30 @@
 			await this.getDeliveryTypeList();
 			await this.getOrderInfo(option.dh);
 		},
+		computed:{
+			userType(){
+			  return this.$store.getLoginInfo()?.userType||'1'
+			},
+			name(){
+				return this.orderData.status+''==='1'?'取消订单':'完成订单';
+			}
+		},
 		methods: {
+			btnClick(){
+				let orderData=this.orderData;
+				orderUpdate({
+					"dh": orderData.dh,
+					"type": orderData.status,
+					"userType": this.userType
+				}).then(({data})=>{
+					console.log('orderUpdate',data)
+				})
+			},	
+			orderUpdate(){
+				orderUpdate().then((data)=>{
+					console.log(data);
+				})
+			},
 			async getOrderInfo(dh){
 				const that=this;
 				if(!dh) {
@@ -67,7 +92,10 @@
 				getOrderInfo(dh).then(({data})=>{
 					console.log('getOrderInfo',data);
 					this.orderData=data?.data||{};
-					that.$loading.open();
+					that.$loading.close();
+					let obj=this.orderData?.orderAddressVO||{};
+					console.log('onLoad obj',obj,this.deliveryTypeList);
+					this.deliveryType=this.deliveryTypeList.find((item)=>item.value+''===obj.deliveryType+'')?.description;
 				}).finally((e)=>{
 					that.$loading.close();
 				})
@@ -94,6 +122,11 @@
 				margin-bottom: 0;
 			}
 		}
+		.status-text{
+			text-align: right;
+			margin-bottom: 10px;
+			color: #D9001B;
+		}
 		.dh-text{
 			margin-top: 30px;
 			padding: 20px;
@@ -102,6 +135,11 @@
 		.content-text{
 			margin-top: 10px;
 			margin-left: 20rpx;
+		}
+		.btn-group{
+			button:first-child{
+				margin-right: 10px;
+			}
 		}
 	}
 </style>

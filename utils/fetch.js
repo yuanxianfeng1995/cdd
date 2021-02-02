@@ -15,7 +15,7 @@ const errHandler = (err) => {
 	return Promise.reject(err);
 };
 export const fetch = (method, url, params = {}, opt = {}) => new Promise((resolve, reject) => {
-	const token=getLoginInfo()?.data?.token;
+	const token=getLoginInfo()?.token;
 	let obj= {
 			'Accept': 'application/json, text/plain, */*',
 			'Accept-Encoding': 'gzip, deflate, br',

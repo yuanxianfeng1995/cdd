@@ -1,6 +1,6 @@
 <template>
-	<Container title="资质审核">
-		<view class="qualifications" :style="[{backgroundColor:'var(--background-color-1)'}]">
+	<Container title="资质审核" :style="[{backgroundColor:'var(--background-color-1)'}]">
+		<view class="qualifications" :style="[{backgroundColor:'var(--background-color-0)'}]">
 			<form @submit="formSubmit">
 				<view class="form-item">
 					<text>商户名称</text>
@@ -49,13 +49,12 @@
 		components: {ImgUpload},
 		data() {
 			return {
+				text: null
 			}
 		},
-		computed:{
-			text(){
-				const data=this.$store.getAddrsInfo();
-				return data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
-			}
+		onShow(){
+			const data=this.$store.getAddrsInfo();
+			this.text=data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
 		},
 		methods: {
 			addr() {
@@ -75,6 +74,14 @@
 					...formData,
 					photoUrls: imgList.join(',')
 				};
+				let bon=true;
+				for(let i in obj){
+					if(!obj[i]){
+						bon=false;
+						this.$tips('提示','请补全数据')
+						return;
+					}
+				}
 				console.log(obj);
 				pharmacySave(obj).then(({data})=>{
 					console.log('pharmacySave',data);

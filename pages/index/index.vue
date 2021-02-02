@@ -105,16 +105,14 @@
 		},
 		computed: {
 			userType(){
-			  return this.$store.getLoginInfo()?.data?.userType||'1'
+			  return this.$store.getLoginInfo()?.userType||'1'
 			},
 			pickerData(){
-				console.log(this.picker.map(item=>item.name))
 				return this.picker.map(item=>item.name)
 			}
 		},
 		watch:{
 			current(val){
-				console.log('watch',val,this.time,this.list2)
 				this.list=[];
 				clearInterval(this.time);
 				this.time=null;
@@ -156,8 +154,8 @@
 		},
 		methods: {
 			getPharmacyList(){
-				let info = this.$store.getLoginInfo()?.data;
-				if(!info) return;
+				let info = this.$store.getLoginInfo();
+				if(!(info&&info.userId)) return;
 				getPharmacyList(info.userId).then(({data})=>{
 					this.picker=data?.data;
 					this.$store.setPharmacy(this.picker[0])
@@ -187,7 +185,6 @@
 				getMini().then(({
 					data
 				}) => {
-					console.log('data',data)
 					let list = [];
 					let list2 = [];
 					let i = 0;
@@ -216,27 +213,28 @@
 			},
 			getCartPage() {
 				const that = this;
-				let data = that.$store.getLoginInfo()?.data;
+				let data = that.$store.getLoginInfo();
 				if(!(data&&data.userId)) return;
 				getCartPage({
 					userType: data.userType,
 					userId: data.userId,
 					pageNo: 1,
 					pageSize: 10,
-				}).then(({data}) => {
-					console.log(data)
-					const list = data?.data?.list?.cartDetails|| [];
-					that.shoppingCartCount=list.length
-					uni.$emit('shoppingCartCount',that.shoppingCartCount);
-					that.$loading.close()
+				}).then((res) => {
+					if(res.resCode===0){
+						const data=res.data;
+						const list = data?.data?.list?.cartDetails|| [];
+						that.shoppingCartCount=list.length
+						uni.$emit('shoppingCartCount',that.shoppingCartCount);
+						that.$loading.close()
+					}
 				}).finally((res) => {
 					that.$loading.close()
 				})
 			},
 			addShoppingCart(val,index,sub) {
 				const that = this;
-				console.log('addShoppingCart', val)
-				let data = that.$store.getLoginInfo()?.data;
+				let data = that.$store.getLoginInfo();
 				if(!(data&&data.userId)){
 					that.$tips('提示','您没有登录');
 					uni.navigateTo({
@@ -254,7 +252,6 @@
 					"equivalent": val.equivalent,
 					"number": 1
 				}).then((res)=>{
-					console.log(res)
 					if(res.resCode===0){
 						that.$tips('成功',res.resMsg);
 						const obj=this.list[index].data[sub];

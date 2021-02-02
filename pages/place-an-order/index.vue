@@ -1,6 +1,7 @@
 <template>
 	<Container style="padding-top: 50rpx;" title="核对订单"  :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view class="place-an-order" :style="[{backgroundColor:'var(--background-color-1)'}]">
+			<view class="status-text">{{orderData.status|format}}</view>
 			<List :data="orderData.orderDetails||[]"></List>
 			<form @submit="formSubmit">
 				<view class="addr-content">
@@ -47,7 +48,7 @@
 				<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(env(safe-area-inset-bottom) / 2);width:100%;">
 					<view>
 						<text>订单金额</text>
-						<text style="color:red;" v-if="orderData.totalMoney">￥{{orderData.totalMoney}}</text>
+						<text style="color:red;" v-if="orderData.payMoney||orderData.totalMoney">￥{{orderData.payMoney||orderData.totalMoney}}</text>
 					</view>
 					<button  form-type="submit" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">下单</button>
 				</view>
@@ -86,7 +87,8 @@
 				pickerData: [],
 				pickerData2: [],
 				orderAddress: {},
-				orderData: {}
+				orderData: {},
+				title: null
 			}
 		},
 		computed:{
@@ -97,17 +99,17 @@
 				return this.$store.getPharmacy()
 			},
 			userType(){
-			  return this.$store.getLoginInfo()?.data?.userType||'1'
+			  return this.$store.getLoginInfo()?.userType||'1'
 			},
 		},
 		async onLoad(option) {
+			this.title=option.title;
 			await this.getOrderInfo(option.dh);
 			this.getSubscribe();
 			this.getDeliveryTypeList();
 			this.getPickUp();
 			const data=this.$store.getAddrsInfo();
 			const pharmacy=this.$store.getPharmacy();
-			console.log('getPharmacy',pharmacy,data)
 			if(this.userType+''==='1'){
 				this.address=data?.address;
 				this.receiver=data?.address;
@@ -123,26 +125,22 @@
 				const that=this;
 				if(!dh) {
 					that.orderData=this.$store.getOrder()||{};
-					console.log('getOrderInfo this.$store.getOrder()',this.$store.getOrder())
 					return
 				};
 				that.$loading.open();
 				getOrderInfo(dh).then(({data})=>{
-					console.log('getOrderInfo',data);
 					that.orderData=data?.data||{};
-					that.$loading.cole();
+					that.$loading.close();
 				}).finally((e)=>{
 					that.$loading.close();
 				})
 			},
 			onchange(e) {
 				const data = e.detail.value;
-				console.log('onchange', e)
 				this.address = data[0].text+data[1].text+data[2].text;
 			},
 			getPickUp(){
-				getPickUp({tenantId: this.$store.getLoginInfo()?.data?.tenantId}).then(({data})=>{
-					console.log('getPickUp',data)
+				getPickUp({tenantId: this.$store.getLoginInfo()?.tenantId}).then(({data})=>{
 					this.pickerData2=data?.data;
 					this.pickerData=data?.data.map(item=>item.address);
 				})
@@ -151,7 +149,6 @@
 				this.index = e.detail.value;
 			},
 			deliveryTypeChange(evt){
-				console.log('deliveryTypeChange',evt)
 				this.checked=evt.detail.value;
 			},
 			formSubmit(e){
@@ -161,14 +158,8 @@
 				};
 				this.order(data)
 			},
-			addrSelect(){
-				uni.navigateTo({
-				  url: '/pages/address/index',
-				});
-			},
 			getDeliveryTypeList(){
 				getDict('delivery_type').then(({data})=>{
-					console.log('getDict delivery_type',data)
 					this.deliveryTypeList=data.data||[];
 				})
 			},
@@ -190,13 +181,11 @@
 				})
 			},
 			requestSubscribeMessage() {
-				console.log('requestSubscribeMessage', this.tmplIds, this.$store.getRequestSubscribeMessage())
 				const that = this;
 				if (!that.$store.getRequestSubscribeMessage()?.data) {
 					uni.requestSubscribeMessage({
 						tmplIds: that.tmplIds,
 						success(res) {
-							console.log('requestSubscribeMessage', res)
 							that.$store.setRequestSubscribeMessage({
 								data: true
 							});
@@ -213,7 +202,7 @@
 			order(orderAddress) {
 				const that = this;
 				let data = that.$store.getOrder();
-				let userInfo = that.$store.getLoginInfo()?.data;
+				let userInfo = that.$store.getLoginInfo();
 				let addrsInfo = that.$store.getAddrsInfo();
 				let getPharmacy=this.$store.getPharmacy();
 				console.log(userInfo, addrsInfo,getPharmacy)
@@ -240,9 +229,8 @@
 				order(parms).then((res) => {
 					if (res.resCode === 0) {
 						const obj=res.data?.data;
-						that.$store.setOrder(parms);
 							uni.navigateTo({
-							  url: '/pages/payment/index',
+							  url: '/pages/payment/index?dh='+obj.dh,
 							});
 						uni.$emit('shoppingCartCount', 0);
 					} else {
@@ -305,6 +293,11 @@
 					line-height: 26px!important;
 				}
 			}
+		}
+		.status-text{
+			text-align: right;
+			margin-bottom: 10px;
+			color: #D9001B;
 		}
 	}
 </style>

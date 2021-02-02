@@ -87,7 +87,7 @@
 			},
 			getCartPage() {
 				const that = this;
-				let data = this.$store.getLoginInfo()?.data;
+				let data = this.$store.getLoginInfo();
 				if(!(data&&data.userId)) {
 					that.$loading.close()
 					return

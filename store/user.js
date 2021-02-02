@@ -11,6 +11,9 @@ export const getRequestSubscribeMessage = () => getItem('requestSubscribeMessage
 export const setOrder = (data = {}) => setItem('order', data, true);
 export const getOrder = () => getItem('order', true);
 
+export const setScene = (data = {}) => setItem('scene', data, true);
+export const getScene = () => getItem('scene', true);
+
 export const setPharmacy = (data = {}) => setItem('pharmacy', data, true);
 export const getPharmacy = () => getItem('pharmacy', true);
 export default {
@@ -23,5 +26,7 @@ export default {
 	setOrder,
 	getOrder,
 	setPharmacy,
-	getPharmacy
+	getPharmacy,
+	setScene,
+	getScene
 };

@@ -2,14 +2,14 @@
 	<view class="login-content">
 		<view class="login-block">
 			<image
-			  v-if="userInfo.avatarUrl"
+			  v-if="id&&userInfo.avatarUrl"
 				class="avatar"
 				slot="right"
 				:src="userInfo.avatarUrl"
 			/>
 			<view v-else class="no-img"></view>
 			<view class="block-r">
-				<text @click="login">{{userInfo.nickName?userInfo.nickName:'去登录'}}</text>
+				<text @click="login">{{id&&userInfo.nickName?userInfo.nickName:'去登录'}}</text>
 			</view>
 		</view>
 		
@@ -61,6 +61,11 @@
 					@click.native="gotoInvite"
 				/>
 				<row-button
+					label="清除缓存"
+					arrow
+					@click.native="clear"
+				/>
+				<row-button
 					label="当前版本"
 					value="1.0.0"
 				/>
@@ -81,13 +86,14 @@ export default {
   },
   data() {
     return {
-			userInfo:this.$store.getUserInfo()?.userInfo,
-			data: {}
+			userInfo:this.userInfo=this.$store.getUserInfo()?.userInfo,
+			data: {},
+			id:this.$store.getLoginInfo()?.userId
     };
   },
 	async onReady() {
 		console.log()
-		const id=this.$store.getLoginInfo()?.data?.userId;
+		const id=this.$store.getLoginInfo()?.userId;
 		if(id) {
 			this.userInfo=this.$store.getUserInfo()?.userInfo;
 			this.getUserInfo();
@@ -96,7 +102,7 @@ export default {
   methods: {
 		getUserInfo(){
 			const that=this;
-			const loginInfo=that.$store.getLoginInfo()?.data;
+			const loginInfo=that.$store.getLoginInfo()||{};
 			getUserInfo({
 				userId:loginInfo.userId,
 				userType:loginInfo.userType
@@ -140,7 +146,7 @@ export default {
   },
   computed: {
 		userType(){
-		  return this.$store.getLoginInfo()?.data?.userType||'1'
+		  return this.$store.getLoginInfo()?.userType||'1'
 		}
   },
 };

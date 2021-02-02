@@ -107,7 +107,7 @@ export default {
   				const that = this;
   				wx.getSetting({
   					success(res) {
-  						let info = that.$store.getLoginInfo()?.data;
+  						let info = that.$store.getLoginInfo();
   						if (!(res.authSetting['scope.userInfo'] && info?.token)) {
   							uni.navigateTo({
   								url: '/pages/login/index',
@@ -118,7 +118,7 @@ export default {
   			},
   			async getMini() {
   				const that = this;
-  				let info = this.$store.getLoginInfo()?.data;
+  				let info = this.$store.getLoginInfo();
   				if (info?.token) {
   					getMini().then(({
   						data
@@ -146,7 +146,7 @@ export default {
   			addShoppingCart(val) {
   				console.log('addShoppingCart', val)
   				this.shoppingCartCount++;
-  				let data = this.$store.getLoginInfo()?.data;
+  				let data = this.$store.getLoginInfo();
   				console.log('data',data)
   				cart({
   					"userId": data.userId,

@@ -37,7 +37,9 @@ export default {
     });
     console.log('App Launch');
   },
-  onShow: function () {
+  onShow: function (options) {
+		this.$store.setScene(options.scene);
+		console.log('options.scene',options.scene)
     !first && check();
     first = false;
     console.log('App Show');
