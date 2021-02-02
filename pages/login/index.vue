@@ -47,6 +47,7 @@
 					phoneIv: detail.iv,
 				};
 				setUserInfo(parms);
+				that.$loading.open()
 				login({
 					"code": parms.code,
 					"rawData": parms.rawData,
@@ -56,12 +57,20 @@
 					"phoneEncryptedData": parms.phoneEncryptedData,
 					"phoneIv": parms.phoneIv,
 				}).then((val) => {
-					console.log('login', val)
-					setLoginInfo(val.data)
-					that.$tips('成功', '登陆成功');
-					uni.navigateTo({
-						url: '/pages/index/index',
-					});
+					if(res.resCode===0){
+						that.$tips('成功',res.resMsg);
+						console.log('login', val)
+						setLoginInfo(val.data.data)
+						that.$loading.close()
+						that.$tips('成功', '登陆成功');
+						uni.navigateTo({
+							url: '/pages/index/index',
+						});
+					}else{
+						that.$tips('失败',res.resMsg);
+					}
+				}).finally((e)=>{
+					that.$loading.close()
 				})
 			},
 			login() {

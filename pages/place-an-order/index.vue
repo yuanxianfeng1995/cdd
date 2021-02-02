@@ -61,7 +61,8 @@
 		order,
 		getSubscribe,
 		getPickUp,
-		getDict
+		getDict,
+		getOrderInfo
 	} from '@/api/auth';
 	import List from '@/pages/shopping-cart/components/list.vue';
 	import response from "@/api/response.js"
@@ -84,13 +85,11 @@
 				receiverTel: null,
 				pickerData: [],
 				pickerData2: [],
-				orderAddress: {}
+				orderAddress: {},
+				orderData: {}
 			}
 		},
 		computed:{
-			orderData(){
-				return this.$store.getOrder()
-			},
 			userData(){
 				return this.$store.getUserInfo()
 			},
@@ -101,7 +100,8 @@
 			  return this.$store.getLoginInfo()?.data?.userType||'1'
 			},
 		},
-		onReady() {
+		async onLoad(option) {
+			await this.getOrderInfo(option.dh);
 			this.getSubscribe();
 			this.getDeliveryTypeList();
 			this.getPickUp();
@@ -119,6 +119,22 @@
 			}
 		},
 		methods: {
+			async getOrderInfo(dh){
+				const that=this;
+				if(!dh) {
+					that.orderData=this.$store.getOrder()||{};
+					console.log('getOrderInfo this.$store.getOrder()',this.$store.getOrder())
+					return
+				};
+				that.$loading.open();
+				getOrderInfo(dh).then(({data})=>{
+					console.log('getOrderInfo',data);
+					that.orderData=data?.data||{};
+					that.$loading.cole();
+				}).finally((e)=>{
+					that.$loading.close();
+				})
+			},
 			onchange(e) {
 				const data = e.detail.value;
 				console.log('onchange', e)
@@ -224,21 +240,7 @@
 				order(parms).then((res) => {
 					if (res.resCode === 0) {
 						const obj=res.data?.data;
-						console.log('order',{ orderDetails:data?.orderDetails,
-							dh: obj.dh,
-							payNo: obj.payNo,
-							createTime: obj.createTime,
-							updateTime: obj.updateTime,
-							totalMoney: data.totalMoney,
-							})
-						that.$store.setOrder(
-						{ orderDetails:data?.orderDetails,
-							dh: obj.dh,
-							payNo: obj.payNo,
-							createTime: obj.createTime,
-							updateTime: obj.updateTime,
-							totalMoney: data.totalMoney,
-							});
+						that.$store.setOrder(parms);
 							uni.navigateTo({
 							  url: '/pages/payment/index',
 							});

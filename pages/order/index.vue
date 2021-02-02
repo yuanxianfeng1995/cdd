@@ -89,11 +89,11 @@ export default {
 			})
 		},
 		scrollBottom(next){
-			this.pageNo=this.pageNo+10;
-			if(!this.noData) {
-				this.getOrderPage();
-				next();
-			}
+			const that=this;
+			that.pageNo=that.pageNo+10;
+			that.getOrderPage().then(()=>{
+					next(that.noData);
+			});
 		},
     tabSelect(value) {
       this.current = value;
@@ -107,7 +107,7 @@ export default {
 				that.$loading.close()
 				return
 			};
-			getOrderPage({
+			return getOrderPage({
 				userType: data.userType,
 				userId: data.userId,
 				status: that.current==='all'?'':that.current,
@@ -132,33 +132,19 @@ export default {
 		},
 		ok(item){
 			console.log('ok',item)
-			this.$store.setOrder({
-				orderDetails:item.orderDetails,
-				dh: item.dh,
-				payNo: item.payNo,
-				createTime: item.createTime,
-				updateTime: item.updateTime,
-				totalMoney: item.payMoney,
-			});
+			this.$store.setOrder(item);
 			uni.navigateTo({
-				url: '/pages/place-an-order/index',
+				url: '/pages/place-an-order/index?dh='+item.dh,
 			})
 		},
 		itemClick(item){
 			console.log('ok',item)
-			this.$store.setOrder({
-				orderDetails:item.orderDetails,
-				dh: item.dh,
-				payNo: item.payNo,
-				createTime: item.createTime,
-				updateTime: item.updateTime,
-				totalMoney: item.payMoney,
-			});
+			this.$store.setOrder(item);
 			uni.navigateTo({
-				url: '/pages/payment/index',
+				url: '/pages/payment/index?dh='+item.dh,
 			})
 		}
-  },
+  }
 };
 </script>
 

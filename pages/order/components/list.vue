@@ -1,5 +1,5 @@
 <template>
-	<scroll-view  class="order-list" scroll-y @scrolltolower="scroll" lower-threshold="0">
+	<scroll-view  class="order-list" scroll-y @scrolltolower="scroll">
 		<view class="card" v-for="(item,index) in data" :key="index" @click="itemClick(item)">
 			<view class="flex-row-space-between">
 				<text>{{item.createTime}}</text>
@@ -12,8 +12,9 @@
 				</view>
 			</view>
 			<view class="flex-row-space-between">
-				<view class="flex-col">
-					<text style="color:red;">￥{{item.payMoney}}</text>
+				<view class="flex-row">
+					<text style="color:red;margin-right: 10px;">￥{{item.payMoney}}</text>
+					<text>{{item.pharmacyName}}</text>
 				</view>
 				<button @click.stop="ok(item)" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">再次购买</button>
 			</view>
@@ -60,7 +61,8 @@
 		},
 		data(){
 			return {
-				loading: true
+				loading: true,
+				noData: false
 			}
 		},
 		onPullDownRefresh() {
@@ -69,13 +71,17 @@
 		},
 		methods: {
 			scroll(e){
-				console.log('scroll',e)
-				this.loading=true;
-				this.$emit('scrollBottom',()=>{
-					setTimeout(()=>{
-						this.loading=false;
-					},400)
-				})
+				const that=this;
+				if(!that.noData){
+					this.loading=true;
+					this.$emit('scrollBottom',(val)=>{
+						console.log('scrollBottom noData',val)
+						that.noData=val;
+						setTimeout(()=>{
+							this.loading=false;
+						},400)
+					})
+				}
 			},
 			itemClick(item){
 				this.$emit('itemClick', item)

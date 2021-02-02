@@ -18,8 +18,8 @@ export const getDict = (url,parmas) => fetch('get', `/wx/mini/dict/${url}`, parm
 export const order = (parmas) => fetch('post', `/wx/mini/order`, parmas);
 //获取全部订单列表
 export const getOrderPage = (parmas) => fetch('get', `/wx/mini/order/page`, parmas);
-//获取全部订单列表
-export const getOrderInfo = (val) => fetch('get', `wx/mini/order/${val}`);
+//获取订单详情
+export const getOrderInfo = (val) => fetch('get', `/wx/mini/order/${val}`);
 
 
 //终端小程序提交资质审核

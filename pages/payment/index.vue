@@ -8,6 +8,12 @@
 				<view class="content-text">创建时间：{{orderData.createTime}}</view>
 				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
 				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
+				<view class="content-text">配送方式：{{deliveryType}}</view>
+				<view class="content-text">收货地址：{{orderData.orderAddressVO?orderData.orderAddressVO.address:''}}</view>
+				<template v-if="orderData.orderAddressVO?orderData.orderAddressVO.deliveryType==='1':false">
+					<view class="content-text">收货人：{{orderData.orderAddressVO?orderData.orderAddressVO.receiver:''}}</view>
+					<view class="content-text">联系方式：{{orderData.orderAddressVO?orderData.orderAddressVO.receiverTel:''}}</view>
+				</template>
 			</view>
 			
 			<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(env(safe-area-inset-bottom) / 2);width:100%;">
@@ -24,6 +30,7 @@
 <script>
 	import {
 		getOrderInfo,
+		getDict
 	} from '@/api/auth';
 	import List from '@/pages/shopping-cart/components/list.vue';
 	export default {
@@ -33,27 +40,44 @@
 		data() {
 			return {
 				modol: {},
-				tmplIds: []
+				tmplIds: [],
+				orderData: {}
 			}
 		},
 		computed:{
-			orderData(){
-				console.log('this.$store.getOrder()',this.$store.getOrder())
-				return this.$store.getOrder()||{}
-			},
-			text(){
-				const data=this.$store.getAddrsInfo();
-				return data?data.address:null;
+			deliveryType(){
+				let data=this.orderData?.orderAddressVO||{}
+				console.log('deliveryType',this.deliveryType.find((item)=>item.value+''===data.deliveryType+''))
+				return this.deliveryType.find((item)=>item.value+''===data.deliveryType+'')
 			}
 		},
+		async onLoad(option) {
+			console.log('option',option)
+			await this.getDeliveryTypeList();
+			await this.getOrderInfo(option.dh);
+		},
 		methods: {
-			getOrderInfo(){
-				const data=this.$store.getOrder();
-				if(!data.dh) return;
-				getOrderInfo(data.dh).then(({data})=>{
+			async getOrderInfo(dh){
+				const that=this;
+				if(!dh) {
+					this.orderData=this.$store.getOrder()||{};
+					return
+				};
+				that.$loading.open();
+				getOrderInfo(dh).then(({data})=>{
 					console.log('getOrderInfo',data);
+					this.orderData=data?.data||{};
+					that.$loading.open();
+				}).finally((e)=>{
+					that.$loading.close();
 				})
-			}
+			},
+			async getDeliveryTypeList(){
+				getDict('delivery_type').then(({data})=>{
+					console.log('getDict delivery_type',data)
+					this.deliveryTypeList=data.data||[];
+				})
+			},
 		}
 	}
 </script>
