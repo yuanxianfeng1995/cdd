@@ -49,10 +49,12 @@
 		components: {ImgUpload},
 		data() {
 			return {
-				text: null
+				text: null,
+				invitationCode: null
 			}
 		},
-		onShow(){
+		onShow(option){
+			this.invitationCode=option.invitationCode;
 			const data=this.$store.getAddrsInfo();
 			this.text=data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
 		},
@@ -68,7 +70,7 @@
 				const addrData = this.$store.getAddrsInfo();
 				console.log(imgList, formData,addrData);
 				const obj={
-					invitationCode: '123456',
+					invitationCode: this.invitationCode||'123456',
 					...addrData,
 					address: this.text,
 					...formData,

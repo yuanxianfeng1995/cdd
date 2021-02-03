@@ -4,9 +4,7 @@
       <view class="img-wrap" v-if="src">
         <image
           class="img"
-          src="src"
-          @load="load"
-          @error="error"
+          :src="`data:image/png;base64,${src}`"
         />
       </view>
     </view>
@@ -22,18 +20,23 @@ export default {
 			src: null
 		};
   },
-  onLoad() {
+  onLoad(option) {
+		console.log('onLoad')
     loading.open();
-		this.getBusiness()
+		this.getBusiness(option.id)
   },
   methods: {
-		getBusiness(){
+		getBusiness(id){
 			const that=this;
-			let userId=this.$store.getLoginInfo()?.userId;
-			if(!userId) return;
-			getBusiness(userId).then((data)=>{
-				console.log('data',data);
-				that.src=data;
+			console.log('id',id)
+			if(!id||id==='undefined') {
+				loading.close()
+				that.src=null;
+				return
+			};
+			getBusiness(id).then(({data})=>{
+				console.log('data',data.data);
+				that.src=data.data;
 			}).finally((e)=>{
 				loading.close()
 			})

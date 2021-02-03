@@ -134,6 +134,9 @@
 			await	this.getMini();
 			this.getCartPage();
 			this.getPharmacyList();
+			uni.$on('cleanUpCache',()=>{
+				this.getMini();
+			})
 		},
 		async onReady() {
 			let that = this;

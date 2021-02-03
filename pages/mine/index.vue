@@ -88,12 +88,14 @@ export default {
     return {
 			userInfo:this.userInfo=this.$store.getUserInfo()?.userInfo,
 			data: {},
-			id:this.$store.getLoginInfo()?.userId
+			id:this.$store.getLoginInfo()?.userId,
+			userType: '1'
     };
   },
 	async onReady() {
 		console.log()
 		const id=this.$store.getLoginInfo()?.userId;
+		this.userType=this.$store.getLoginInfo()?.userType||'1';
 		if(id) {
 			this.userInfo=this.$store.getUserInfo()?.userInfo;
 			this.getUserInfo();
@@ -118,7 +120,8 @@ export default {
 			});
 		},	
 		login(){
-			if(this.userInfo?.nickName) return;
+			const id=this.$store.getLoginInfo()?.userId;
+			if(id) return;
 			uni.navigateTo({
 			  url: '/pages/login/index',
 			});
@@ -130,6 +133,9 @@ export default {
 			this.$store.setRequestSubscribeMessage(null);
 			this.$store.setOrder(null);
 			this.userInfo={};
+			this.data={};
+			this.userType='1';
+			uni.$emit('cleanUpCache');
 			uni.$emit('shoppingCartCount',0);
 			this.$tips('成功','缓存清理成功');
 		},
@@ -140,14 +146,9 @@ export default {
 		},
     gotoInvite() {
       uni.navigateTo({
-        url: '/pages/invite/index',
+        url: '/pages/invite/index?id='+this.data.invitationCode,
       });
     },
-  },
-  computed: {
-		userType(){
-		  return this.$store.getLoginInfo()?.userType||'1'
-		}
   },
 };
 </script>

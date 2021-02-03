@@ -27,7 +27,7 @@
 				</view>
 				<view class="btn-group">
 					<button @click="ok"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">联系客服</button>
-					<button @click="btnClick" v-if="orderData.status+''==='1'||orderData.status+''==='2'"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name}}</button>
+					<button @click="btnClick" v-if="orderData.status+''==='0'||orderData.status+''==='6'"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name}}</button>
 				</view>
 			</view>
 		</view>
@@ -63,7 +63,7 @@
 			  return this.$store.getLoginInfo()?.userType||'1'
 			},
 			name(){
-				return this.orderData.status+''==='1'?'取消订单':'完成订单';
+				return this.orderData.status+''==='0'?'取消订单':'完成订单';
 			}
 		},
 		methods: {
@@ -71,7 +71,7 @@
 				let orderData=this.orderData;
 				orderUpdate({
 					"dh": orderData.dh,
-					"type": orderData.status,
+					"type": orderData.status+''==='0'?'4':'3',
 					"userType": this.userType
 				}).then(({data})=>{
 					console.log('orderUpdate',data)
