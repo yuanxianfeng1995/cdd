@@ -13,7 +13,7 @@
 			</view>
 			<view class="flex-row-space-between">
 				<view class="flex-row">
-					<text style="color:red;margin-right: 10px;">￥{{item.payMoney}}</text>
+					<text style="color:red;margin-right: 10px;">￥{{item.payMoney|returnFloat}}</text>
 					<text v-if="item.pharmacyName">{{item.pharmacyName}}</text>
 				</view>
 				<button @click.stop="ok(item)" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">再次购买</button>

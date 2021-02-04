@@ -1,5 +1,8 @@
 <template>
 	<view class="shopping-cart-list">
+		<view class="header-btn">
+			<view @click="changeStatus">{{name}}</view>
+		</view>
 		<view class="card" v-for="(item,index) in list" :key="index">
 			 <label class="radio" v-if="mode==='edit'" style="margin-right: 20rpx;"><radio :checked="item.radio" @click="setRadio(index)"/></label>
 			 <view class="card-content">
@@ -7,7 +10,7 @@
 				 <view class="flex-row-space-between">
 				 	<view class="flex-1 flex-row">
 				 		<text class="flex-1">{{item.equivalent}}/{{item.specifications}}</text>
-				 		<text class="flex-1" style="color:red">￥{{item.price}}</text>
+				 		<text class="flex-1" style="color:red">￥{{item.price|returnFloat}}</text>
 				 	</view>
 				 	<view class="flex-row" style="border:1rpx solid var(--border-color-0)">
 				 		<text style="padding:10rpx 30rpx;" @click="cut(index)">-</text>
@@ -16,6 +19,13 @@
 				 	</view>
 				 </view>
 			 </view>
+		</view>
+		<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(100rpx + env(safe-area-inset-bottom) / 2);width:100%;">
+			<view>
+				<text>合计</text>
+				<text style="color:red;" >￥{{totalMoney|returnFloat}}</text>
+			</view>
+			<button @click="ok" v-if="data.length!==0" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">{{name2}}</button>
 		</view>
 	</view>
 </template>
@@ -27,14 +37,12 @@
 				type: Array,
 				default: [],
 			},
-			mode:{
-				type: String,
-				default: 'add',
-			},
+			money: [String,Number]
 		},
 		data(){
 			return {
-				list: []
+				list: [],
+				mode: "preview"
 			}
 		},
 		created() {
@@ -43,7 +51,16 @@
 					...item,
 					radio: false
 				}
-			})
+			});
+			this.totalMoney=this.money;
+		},
+		computed: {
+			name() {
+				return this.mode === "preview" ? "编辑" : this.mode === "edit" ? "完成" : ""
+			},
+			name2() {
+				return this.mode === "preview" ? "结算" : this.mode === "edit" ? "删除" : "结算"
+			},
 		},
 		watch:{
 			data(val){
@@ -57,12 +74,33 @@
 			},
 		},
 		methods:{
-			getData(){
-				return this.list
+			changeStatus(){
+				if(this.mode==='edit'){
+					this.formData();
+					this.mode='preview';
+				}else{
+					this.mode='edit';
+				}
 			},
-			delete(){
-				console.log('delete')
+			ok() {
+				switch (this.mode) {
+					case "preview":
+					  this.$store.setOrder({orderDetails:this.list,totalMoney:this.totalMoney});
+						uni.navigateTo({
+							url: '/pages/place-an-order/index',
+						})
+						break;
+					case "edit":
+						this.formData();
+						break;	
+				}
+			},
+			formData(){
 				this.list=this.list.filter((item)=>!item.radio)
+				console.log('this.list',this.list)
+				this.totalMoney=this.list.length>0?this.list.map(item=>item.number*item.price).reduce((a,b)=>{
+					return a+b
+				}):0
 			},
 			cut(index){
 				if(this.mode!=='edit') return;
@@ -96,6 +134,11 @@
 	  padding: 20rpx;
 		display: flex;
 		align-items: center;
+	}
+	.header-btn {
+		z-index: 9;
+		text-align: right;
+		margin-bottom: 10px;
 	}
 	.card-content{
 		flex: 1;

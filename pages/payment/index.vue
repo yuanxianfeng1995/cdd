@@ -4,14 +4,14 @@
 			<view class="status-text">{{orderData.status|format}}</view>
 			<List :data="orderData.orderDetails||[]"></List>
 			<view class="dh-text">
-				<view class="content-text">订单编号：{{orderData.dh}}</view>
+				<view class="content-text">订单编号：{{orderData.dh||''}}</view>
 				<view class="content-text">交易号：    {{orderData.payNo||''}}</view>
-				<view class="content-text">创建时间：{{orderData.createTime}}</view>
-				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
-				<view class="content-text">完成时间：{{orderData.updateTime}}</view>
+				<view class="content-text">创建时间：{{orderData.createTime||''}}</view>
+				<view class="content-text">完成时间：{{orderData.updateTime||''}}</view>
+				<view class="content-text">完成时间：{{orderData.updateTime||''}}</view>
 				
 				<template v-if="orderData.orderAddressVO">
-					<view class="content-text">配送方式：{{deliveryType}}</view>
+					<view class="content-text">配送方式：{{deliveryType||''}}</view>
 					<view class="content-text">收货地址：{{orderData.orderAddressVO?orderData.orderAddressVO.address:''}}</view>
 					<template v-if="orderData.orderAddressVO?orderData.orderAddressVO.deliveryType==='1':false">
 						<view class="content-text">收货人：{{orderData.orderAddressVO?orderData.orderAddressVO.receiver:''}}</view>
@@ -23,7 +23,7 @@
 			<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(env(safe-area-inset-bottom) / 2);width:100%;">
 				<view>
 					<text>订单金额</text>
-					<text style="color:red;" v-if="orderData.payMoney||orderData.totalMoney">￥{{orderData.payMoney||orderData.totalMoney}}</text>
+					<text style="color:red;" v-if="orderData.payMoney||orderData.totalMoney">￥{{(orderData.payMoney||orderData.totalMoney)|returnFloat}}</text>
 				</view>
 				<view class="btn-group">
 					<button @click="ok"  class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">联系客服</button>
@@ -40,7 +40,7 @@
 		getDict,
 		orderUpdate
 	} from '@/api/auth';
-	import List from '@/pages/shopping-cart/components/list.vue';
+	import List from './components/list.vue';
 	export default {
 		components: {
 			List

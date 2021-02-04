@@ -1,7 +1,7 @@
 <template>
 	<Container style="padding-top: 50rpx;" title="核对订单"  :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view class="place-an-order" :style="[{backgroundColor:'var(--background-color-1)'}]">
-			<view class="status-text">{{orderData.status|format}}</view>
+			<view class="status-text" v-if="orderData.status">{{orderData.status|format}}</view>
 			<List :data="orderData.orderDetails||[]"></List>
 			<form @submit="formSubmit">
 				<view class="addr-content">
@@ -48,7 +48,7 @@
 				<view class="flex-row-space-between" style="z-index:2;box-shadow:var(--box-shadow-0);background-color:var(--background-color-0);padding:20rpx;position:fixed;bottom: calc(env(safe-area-inset-bottom) / 2);width:100%;">
 					<view>
 						<text>订单金额</text>
-						<text style="color:red;" v-if="orderData.payMoney||orderData.totalMoney">￥{{orderData.payMoney||orderData.totalMoney}}</text>
+						<text style="color:red;" v-if="orderData.payMoney||orderData.totalMoney">￥{{(orderData.payMoney||orderData.totalMoney)|returnFloat}}</text>
 					</view>
 					<button  form-type="submit" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">下单</button>
 				</view>
@@ -65,7 +65,7 @@
 		getDict,
 		getOrderInfo
 	} from '@/api/auth';
-	import List from '@/pages/shopping-cart/components/list.vue';
+	import List from '@/pages/payment/components/list.vue';
 	import response from "@/api/response.js"
 	import UniDataPicker from "@/components/uni-data-picker/uni-data-picker.vue"
 	export default {
@@ -125,6 +125,7 @@
 				const that=this;
 				if(!dh) {
 					that.orderData=this.$store.getOrder()||{};
+					console.log('that.orderData',that.orderData)
 					return
 				};
 				that.$loading.open();

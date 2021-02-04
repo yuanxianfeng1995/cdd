@@ -1,10 +1,9 @@
 <template>
-	<Container style="padding-top: 100rpx;"  title="我的">
+	<Container style="padding-top: 100rpx;"  title="登录">
 		<view class="login" :style="[{backgroundColor:'var(--background-color-1)'}]">
 			<view class="content">
-				<button v-if="!next" type="primary"  open-type="getUserInfo" @getuserinfo="getUserinfo" withCredentials="true">微信登陆</button>
-				<button v-else type="primary"  open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"
-				 @getphonenumber="getPhoneNumber" withCredentials="true">手机号</button>
+				<button type="primary" size="mini"  open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"
+				 @getphonenumber="getPhoneNumber" withCredentials="true">授权登录</button>
 			</view>
 		</view>
 	</Container>
@@ -23,14 +22,9 @@
 	export default {
 		data() {
 			return {
-				next: false
 			}
 		},
 		methods: {
-			getUserinfo() {
-				this.login();
-				this.next = true;
-			},
 			getPhoneNumber(val) {
 				console.log('getPhoneNumber',val)
 				const that=this;
@@ -71,33 +65,6 @@
 					}
 				}).finally((e)=>{
 					that.$loading.close()
-				})
-			},
-			login() {
-				const that = this;
-				wx.login({
-					success(res) {
-						console.log('login', res)
-						var code = res.code
-						if (code) {
-							//发起网络请求
-							// 获取微信用户信息
-							wx.getUserInfo({
-								success: function(val) {
-									const parms = {
-										...val,
-										code: code,
-									};
-									setUserInfo(parms);
-								},
-								fail: res => {
-									that.$tips('提示', '用户取消授权');
-								}
-							})
-						} else {
-							that.$tips('失败', '登录失败！');
-						}
-					}
 				})
 			},
 		}

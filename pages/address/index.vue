@@ -51,9 +51,6 @@
 				this.$tips('成功','地址保存成功');
 				this.$store.setAddrsInfo(obj);
 				uni.navigateBack();
-				// uni.navigateTo({
-				//   url: '/pages/qualifications/index',
-				// });
 				}else{
 					this.$tips('提示','请填写地址数据');
 				}

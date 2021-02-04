@@ -54,7 +54,7 @@
 			}
 		},
 		onShow(option){
-			this.invitationCode=option.invitationCode;
+			this.invitationCode=option?.invitationCode;
 			const data=this.$store.getAddrsInfo();
 			this.text=data?data.addressProvince+data.addressCity+data.addressArea+data.address:null;
 		},
@@ -69,6 +69,7 @@
 				const formData = e.detail.value;
 				const addrData = this.$store.getAddrsInfo();
 				console.log(imgList, formData,addrData);
+				
 				const obj={
 					invitationCode: this.invitationCode||'123456',
 					...addrData,
@@ -80,9 +81,21 @@
 				for(let i in obj){
 					if(!obj[i]){
 						bon=false;
-						this.$tips('提示','请补全数据')
+						this.$tips('提示','请补全数据');
 						return;
 					}
+				}
+				if(formData.name.length>=50){
+					this.$tips('提示','商户名称最多输入50个字');
+					return;
+				}
+				if(formData.contactPer.length>=50){
+					this.$tips('提示','联系人最多输入50个字');
+					return;
+				}
+				if(formData.merchantPhone.length!==11){
+					this.$tips('提示','请输入正确的电话号码');
+					return;
 				}
 				console.log(obj);
 				pharmacySave(obj).then(({data})=>{

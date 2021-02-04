@@ -1,5 +1,5 @@
 <template>
-	<Container style="padding-top: 50rpx;" title="订单">
+	<Container style="padding-top: 50rpx;" title="订单" :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<Order class="salesman-order"></Order>
 	</Container>
 </template>

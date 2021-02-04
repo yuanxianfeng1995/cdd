@@ -25,3 +25,16 @@ Vue.filter('format', (value) => {
 	}
 	return data
 })
+
+
+Vue.filter('returnFloat', (value) => {
+	var value = Math.round(parseFloat(value) * 100) / 100;
+	var xsd = value.toString().split(".");
+	if (xsd.length == 1) {
+		value = value.toString() + ".0";
+		return value;
+	}
+	if (xsd.length > 1) {
+		return value;
+	}
+})

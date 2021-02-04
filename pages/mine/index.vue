@@ -9,8 +9,10 @@
 			/>
 			<view v-else class="no-img"></view>
 			<view class="block-r">
-				<text @click="login">{{id&&userInfo.nickName?userInfo.nickName:'去登录'}}</text>
+				<text v-if="id&&userInfo.nickName">{{userInfo.nickName}}</text>
+				<button v-else type="default" size="mini" open-type="getUserInfo" @getuserinfo="login" withCredentials="true">去登录</button>
 			</view>
+			
 		</view>
 		
 		<scroll-view
@@ -42,6 +44,11 @@
 				/>
 			</template>
 			<template v-else>
+				<row-button
+					label="资质认证"
+					value="去认证>"
+					@click.native="qualifications"
+				/>
 				<row-button
 					label="订单笔数"
 					:value="(data.total||'--')+'笔'"
@@ -89,11 +96,11 @@ export default {
 			userInfo:this.userInfo=this.$store.getUserInfo()?.userInfo,
 			data: {},
 			id:this.$store.getLoginInfo()?.userId,
-			userType: '1'
+			userType: '1',
+			authorization: true
     };
   },
 	async onReady() {
-		console.log()
 		const id=this.$store.getLoginInfo()?.userId;
 		this.userType=this.$store.getLoginInfo()?.userType||'1';
 		if(id) {
@@ -103,6 +110,7 @@ export default {
 	},
   methods: {
 		getUserInfo(){
+			console.log('getUserInfo')
 			const that=this;
 			const loginInfo=that.$store.getLoginInfo()||{};
 			getUserInfo({
@@ -113,25 +121,51 @@ export default {
 			}).finally((e)=>{
 			})
 		},
+		login(val) {
+			const that = this;
+			const id=this.$store.getLoginInfo()?.userId;
+			if(id) return;
+			console.log('val',val)
+			if(val.detail.errMsg!=='getUserInfo:ok') {
+					that.$tips('提示', '用户取消授权');
+					return;
+			}
+			wx.login({
+				success(res) {
+					console.log('login', res)
+					var code = res.code
+					if (code) {
+						//发起网络请求
+						// 获取微信用户信息
+						wx.getUserInfo({
+							success: function(val) {
+								const parms = {
+									...val,
+									code: code,
+								};
+								that.$store.setUserInfo(parms);
+								uni.navigateTo({
+								  url: '/pages/login/index',
+								});
+							},
+							fail: res => {
+								that.$tips('提示', '用户取消授权');
+							}
+						})
+					} else {
+						that.$tips('失败', '登录失败！');
+					}
+				}
+			})
+		},
 		qualifications(){
 			console.log('authentication')
 			uni.navigateTo({
 			  url: '/pages/qualifications/index',
 			});
 		},	
-		login(){
-			const id=this.$store.getLoginInfo()?.userId;
-			if(id) return;
-			uni.navigateTo({
-			  url: '/pages/login/index',
-			});
-		},
 		clear(){
-			this.$store.setLoginInfo(null);
-			this.$store.setUserInfo(null);
-			this.$store.setAddrsInfo(null);
-			this.$store.setRequestSubscribeMessage(null);
-			this.$store.setOrder(null);
+			uni.clearStorage();
 			this.userInfo={};
 			this.data={};
 			this.userType='1';
@@ -177,6 +211,17 @@ export default {
 		font-size: 40rpx;
 		font-weight: 600;
 		margin-top: 20rpx;
+		button{
+			border-color: var(--background-color-0);
+			background-color: var(--background-color-0);
+			color: var(--font-color-0);
+			font-size: 40rpx;
+			font-weight: 600;
+			&::after{
+				content: "";
+				border: none;
+			}
+		}
 	}
 }
 .no-img{
