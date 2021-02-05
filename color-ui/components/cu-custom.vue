@@ -66,6 +66,10 @@ export default {
       type: String,
       default: '',
     },
+		delta: {
+      type: Number,
+      default: 1,
+    },
   },
   methods: {
     BackPage() {
@@ -74,7 +78,7 @@ export default {
         return uni.redirectTo({ url });
       }
       uni.navigateBack({
-        delta: 1,
+        delta: this.delta,
       });
     },
   },

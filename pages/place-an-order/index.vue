@@ -231,7 +231,7 @@
 					if (res.resCode === 0) {
 						const obj=res.data?.data;
 							uni.navigateTo({
-							  url: '/pages/payment/index?dh='+obj.dh,
+							  url: '/pages/payment/index?dh='+obj.dh+'&&delta=2'
 							});
 						uni.$emit('shoppingCartCount', 0);
 					} else {

@@ -91,7 +91,7 @@ export default {
 			userInfo:this.userInfo=this.$store.getUserInfo()?.userInfo,
 			data: {},
 			id:this.$store.getLoginInfo()?.userId,
-			userType: '1',
+			userType: this.$store.getLoginInfo()?.userType||'1',
 			authorization: true
     };
   },

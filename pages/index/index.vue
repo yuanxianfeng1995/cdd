@@ -126,7 +126,7 @@
 		},
 		onShow(option){
 			console.log('option',option)
-			this.current=option?.current||'home';
+			if(option?.current) this.current=option.current;
 			uni.$emit('show',true);
 			this.getCartPage()
 		},

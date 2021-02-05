@@ -1,5 +1,5 @@
 <template>
-	<Container style="padding-top: 50rpx;" title="订单详情" :style="[{backgroundColor:'var(--background-color-1)'}]">
+	<Container style="padding-top: 50rpx;" title="订单详情" :style="[{backgroundColor:'var(--background-color-1)'}]" :delta="delta?delta:1">
 		<view class="place-an-order">
 			<view class="status-text">{{orderData.status|format}}</view>
 			<List :data="orderData.orderDetails||[]"></List>
@@ -50,13 +50,15 @@
 				modol: {},
 				tmplIds: [],
 				orderData: {},
-				deliveryType: null
+				deliveryType: null,
+				delta: null
 			}
 		},
 		async onLoad(option) {
+			this.delta=option?.delta;
 			console.log('option',option)
 			await this.getDeliveryTypeList();
-			await this.getOrderInfo(option.dh);
+			await this.getOrderInfo(option?.dh);
 		},
 		computed:{
 			userType(){

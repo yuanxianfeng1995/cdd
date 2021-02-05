@@ -5,6 +5,7 @@
     :data-theme-mode="mode"
   >
     <CuCustom
+		  :delta="delta"
       style-inner="background-image:linear-gradient(to bottom,var(--background-color-main-0),var(--background-color-main-1))"
       :isBack="isBack"
     >
@@ -48,6 +49,10 @@ export default {
       type: Boolean,
       default: false,
     },
+		delta: {
+		  type: Number,
+		  default: 1,
+		},
     value: String,
     isBack: {
       type: Boolean,
