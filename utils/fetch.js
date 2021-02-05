@@ -61,7 +61,7 @@ export const fetch = (method, url, params = {}, opt = {}) => new Promise((resolv
 			setUserInfo();
 			setLoginInfo();
 			uni.navigateTo({
-				url: '/pages/login/index',
+				url: "/pages/index/index?current='mine'",
 			});
 		}
 		opt.errHandler ? opt.errHandler(res) : errHandler(res)

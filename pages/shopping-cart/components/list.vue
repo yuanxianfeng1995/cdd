@@ -14,7 +14,7 @@
 				 	</view>
 				 	<view class="flex-row" style="border:1rpx solid var(--border-color-0)">
 				 		<text style="padding:10rpx 30rpx;" @click="cut(index)">-</text>
-				 		<input type="number" :disabled="mode!=='edit'" @confirm="inputChange($event,index)" :value="item.number" style="text-align:center;width:80rpx;background-color:var(--background-color-1)" />
+				 		<input type="number" :disabled="mode!=='edit'" @blur="inputChange($event,index)" :value="item.number" style="text-align:center;width:80rpx;background-color:var(--background-color-1)" />
 				 		<text style="padding:10rpx 30rpx;" @click="add(index)">+</text>
 				 	</view>
 				 </view>
@@ -112,13 +112,17 @@
 			add(index){
 				if(this.mode!=='edit') return;
 				this.list[index].number=this.list[index].number+1;
-				console.log('add',this.list[index].number)
+				this.totalMoney=this.list.length>0?this.list.map(item=>item.number*item.price).reduce((a,b)=>{
+					return a+b
+				}):0
 			},
 			inputChange(e,index){
-				console.log(e)
+				console.log('inputChange',e)
 				if(this.mode!=='edit') return;
 				this.list[index].number=e.detail.value;
-				console.log('inputChange',this.list[index].number)
+				this.totalMoney=this.list.length>0?this.list.map(item=>item.number*item.price).reduce((a,b)=>{
+					return a+b
+				}):0
 			},
 			setRadio(index){
 				this.list[index].radio=!this.list[index].radio;

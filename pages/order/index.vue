@@ -19,7 +19,7 @@
 			</view>
 		</scroll-view>
 		<Empty v-if="data&&data.length===0"></Empty>
-		<List v-else :data="data" @ok="ok" @itemClick="itemClick" @scrollBottom="scrollBottom"></List>
+		<List ref="orderList" v-else :data="data" @ok="ok" @itemClick="itemClick" @scrollBottom="scrollBottom"></List>
 	</view>
 </template>
 
@@ -55,7 +55,8 @@ export default {
 			data: [],
 			status: 0,
 			pageNo: 1,
-			noData: false
+			noData: false,
+			scroll: false
     };
   },
 	async onReady() {
@@ -92,15 +93,23 @@ export default {
 			})
 		},
 		scrollBottom(next){
+			console.log('scrollBottom')
 			const that=this;
-			that.pageNo=that.pageNo+10;
+			that.pageNo=that.pageNo+9;
+			that.scroll=true;
 			that.getOrderPage().then(()=>{
 					next(that.noData);
+					that.scroll=false;
 			});
 		},
     tabSelect(value) {
+			this.$loading.open();
       this.current = value;
-			this.getOrderPage();
+			this.pageNo=1;
+			this.scroll=false;
+			this.getOrderPage().then(()=>{
+				if(this.$refs.orderList) this.$refs.orderList.setLoading(false);
+			});
 			console.log('tabSelect',value)
     },
 		getOrderPage(){
@@ -117,12 +126,12 @@ export default {
 				pageNo: that.pageNo,
 				pageSize: 10,
 			}).then(({data})=>{
-				console.log('getOrderPage',data)
-				if(that.data.length>0){
+				console.log('getOrderPage',data,that.scroll)
+				if(that.scroll){
 					if(((data?.data?.list)||[]).length===0) {
 						that.noData=true;
 					}else{
-						that.data.push(data?.data?.list)
+						that.data.push(...data?.data?.list)
 					}
 				}else{
 					that.data=data?.data?.list||[]

@@ -45,11 +45,6 @@
 			</template>
 			<template v-else>
 				<row-button
-					label="资质认证"
-					value="去认证>"
-					@click.native="qualifications"
-				/>
-				<row-button
 					label="订单笔数"
 					:value="(data.total||'--')+'笔'"
 				/>

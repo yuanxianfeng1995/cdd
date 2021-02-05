@@ -1,7 +1,7 @@
 <template>
 	<Container style="padding-top: 50rpx;" title="核对订单"  :style="[{backgroundColor:'var(--background-color-1)'}]">
 		<view class="place-an-order" :style="[{backgroundColor:'var(--background-color-1)'}]">
-			<view class="status-text" v-if="orderData.status">{{orderData.status|format}}</view>
+			<view class="status-text" v-if="orderData.status||orderData.status+''==='0'">{{orderData.status|format}}</view>
 			<List :data="orderData.orderDetails||[]"></List>
 			<form @submit="formSubmit">
 				<view class="addr-content">

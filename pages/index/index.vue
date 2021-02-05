@@ -15,7 +15,7 @@
 			<view class="cu-bar search fixed" :style="[{top:CustomBar + 'px',backgroundColor:'var(--background-color-0)'}]">
 				<view class="search-form round">
 					<text class="cuIcon-search"style="color:var(--font-color-1)"></text>
-					<input type="text"  @blur="nameChange" placeholder="请输入药材名称/拼音缩写" confirm-type="search" style="background-color:transparent;color:var(--font-color-0)" />
+					<input type="text"  @confirm="nameChange" placeholder="请输入药材名称/拼音缩写" confirm-type="search" style="background-color:transparent;color:var(--font-color-0)" />
 				</view>
 				<view class="action">
 					<button @click="search" class="cu-btn shadow-blur round" style="background-color:var(--background-color-main-0);color:#fff;">搜索</button>
@@ -124,19 +124,11 @@
 				}
 			}
 		},
-		onShow(){
+		onShow(option){
+			console.log('option',option)
+			this.current=option?.current||'home';
 			uni.$emit('show',true);
 			this.getCartPage()
-		},
-		async onLoad() {
-			let that = this;
-			this.$loading.open()
-			await	this.getMini();
-			this.getCartPage();
-			this.getPharmacyList();
-			uni.$on('cleanUpCache',()=>{
-				this.getMini();
-			})
 		},
 		async onReady() {
 			let that = this;
@@ -154,6 +146,13 @@
 					that.barTop = res.top;
 				})
 				.exec();
+				this.$loading.open()
+				await	this.getMini();
+				this.getCartPage();
+				this.getPharmacyList();
+				uni.$on('cleanUpCache',()=>{
+					this.getMini();
+				})
 		},
 		methods: {
 			getPharmacyList(){
@@ -193,6 +192,7 @@
 			},
 			nameChange(e){
 				this.searchContent=e.detail.value;
+				this.search();
 			},
 			handleList(){
 				const that=this;
@@ -262,9 +262,7 @@
 				let data = that.$store.getLoginInfo();
 				if(!(data&&data.userId)){
 					that.$tips('提示','您没有登录');
-					uni.navigateTo({
-						url: '/pages/login/index',
-					});
+					that.current='mine';
 					return;
 				};
 				cart({

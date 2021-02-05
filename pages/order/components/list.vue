@@ -42,6 +42,9 @@
 			uni.stopPullDownRefresh();
 		},
 		methods: {
+			setLoading(val){
+				this.loading=val;
+			},
 			scroll(e){
 				const that=this;
 				if(!that.noData){

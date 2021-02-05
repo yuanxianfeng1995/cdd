@@ -75,11 +75,8 @@
 					"userType": this.userType
 				}).then(({data})=>{
 					console.log('orderUpdate',data)
-				})
-			},	
-			orderUpdate(){
-				orderUpdate().then((data)=>{
-					console.log(data);
+						this.$tips('成功', orderData.status+''==='0'?'订单已取消':'订单已完成');
+						uni.navigateBack(-2);
 				})
 			},
 			async getOrderInfo(dh){
