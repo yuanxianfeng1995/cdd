@@ -1,6 +1,12 @@
 <template>
 	<view  class="shopping-cart">
-		<Empty v-if="data.length===0"></Empty>
+		<template v-if="data&&data.length===0">
+			<Empty></Empty>
+			<view class="no-login" v-if="!userId">
+				<text>登录才能查看你的购物车哦</text>
+				<button class="primary-btn" open-type="getUserInfo" @getuserinfo="login" withCredentials="true">登录</button>
+			</view>
+		</template>
 		<template v-else >
 			<List :data="data" :money="totalMoney" ref="list" @ok="ok"></List>
 		</template>
@@ -24,6 +30,11 @@
 				totalMoney: null
 			}
 		},
+		computed: {
+			userId(){
+			  return this.$store.getLoginInfo()?.userId
+			},
+		},	
 		async onReady() {
 			console.log('onReady')
 			this.$loading.open();
@@ -33,6 +44,43 @@
 			})
 		},
 		methods: {
+			login(val) {
+				const that = this;
+				const id=this.userId;
+				if(id) return;
+				console.log('val',val)
+				if(val.detail.errMsg!=='getUserInfo:ok') {
+						that.$tips('提示', '用户取消授权');
+						return;
+				}
+				wx.login({
+					success(res) {
+						console.log('login', res)
+						var code = res.code
+						if (code) {
+							//发起网络请求
+							// 获取微信用户信息
+							wx.getUserInfo({
+								success: function(val) {
+									const parms = {
+										...val,
+										code: code,
+									};
+									that.$store.setUserInfo(parms);
+									uni.navigateTo({
+										url: '/pages/login/index',
+									});
+								},
+								fail: res => {
+									that.$tips('提示', '用户取消授权');
+								}
+							})
+						} else {
+							that.$tips('失败', '登录失败！');
+						}
+					}
+				})
+			},
 			getCartPage() {
 				const that = this;
 				let data = this.$store.getLoginInfo();
@@ -68,5 +116,19 @@
 		width: 100%;
 		z-index: 9;
 		padding-top: 60rpx;
+	}
+	.no-login{
+		background-color: --background-color-main-1;
+		text-align: center;
+		margin-top: 20px;
+		font-size: 32rpx;
+		text{
+			font-size: 34rpx;
+			color: #666;
+		}
+		.primary-btn{
+			width: 200px;
+			margin: 10px auto 0 auto;
+		}
 	}
 </style>

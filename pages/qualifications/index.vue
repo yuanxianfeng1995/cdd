@@ -22,11 +22,11 @@
 				</view>
 				<view class="form-item">
 					<text>联系电话</text>
-					<input name="merchantPhone" type="number" />
+					<input name="merchantPhone" type="number" maxlength="11"/>
 				</view>
 				<view class="form-item addr">
 					<text>地址</text>
-					<view class="select" @click="addr">{{text?text:'点击选择'}}</view>
+					<view class="select" @click="addr">{{text?text:'请点击选择地址'}}</view>
 				</view>
 				<view class="form-item">
 					<text>上传照片</text>
@@ -34,7 +34,7 @@
 				</view>
 
 				<view class="foter">
-					<button form-type="submit" type="primary">确定</button>
+					<button form-type="submit" class="primary-btn">确定</button>
 				</view>
 			</form>
 
@@ -70,15 +70,20 @@
 				const addrData = this.$store.getAddrsInfo();
 				console.log(imgList, formData,addrData);
 				
-				const obj={
+				let obj={
 					invitationCode: this.invitationCode||'123456',
 					...addrData,
-					address: this.text,
 					...formData,
+					address: this.text,
 					photoUrls: imgList.join(',')
 				};
 				let bon=true;
 				for(let i in obj){
+					if(!obj.addressProvince){
+						bon=false;
+						this.$tips('提示','请选择填写地址');
+						return;
+					}
 					if(!obj[i]){
 						bon=false;
 						this.$tips('提示','请补全数据');
@@ -97,10 +102,13 @@
 					this.$tips('提示','请输入正确的电话号码');
 					return;
 				}
-				console.log(obj);
 				pharmacySave(obj).then(({data})=>{
 					console.log('pharmacySave',data);
-					this.$store.setAddrsInfo(obj);
+					this.$tips('提示',data.msg)
+					if(data.code+''==='0'){
+						this.$store.setAddrsInfo(obj);
+						uni.navigateBack()
+					}
 				})
 			}
 		}
@@ -139,6 +147,7 @@
 			display: flex;
 			align-items: center;
 			margin-bottom: 10px;
+			font-size: 32rpx;
 			text {
 				margin-right: 30rpx;
 				margin-bottom: 0;

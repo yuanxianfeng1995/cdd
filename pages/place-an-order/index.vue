@@ -22,15 +22,15 @@
 					<template v-if="checked+''==='1'">
 						<view class="form-item">
 							<text>收货地址：</text>
-								<input name="address" type="text" :value="address"/>
+								<input name="address" @blur="setData($event,'address')" @confirm="setData($event,'address')" type="text" :value="address"/>
 						</view>
 						<view class="form-item">
 							<text>收货人：</text>
-							<input name="receiver" type="text" :value="receiver"/>
+							<input name="receiver" @blur="setData($event,'receiver')" @confirm="setData($event,'receiver')" type="text" :value="receiver"/>
 						</view>
 						<view class="form-item">
 							<text>联系方式：</text>
-							<input name="receiverTel" type="text" :value="receiverTel"/>
+							<input name="receiverTel" maxlength="11" @blur="setData($event,'receiverTel')" @confirm="setData($event,'receiverTel')" type="text" :value="receiverTel"/>
 						</view>
 					</template>
 					<view class="form-item" v-else>
@@ -121,6 +121,9 @@
 			}
 		},
 		methods: {
+			setData(data,val){
+				this[val]=data.detail.value;
+			},
 			async getOrderInfo(dh){
 				const that=this;
 				if(!dh) {
@@ -153,8 +156,13 @@
 				this.checked=evt.detail.value;
 			},
 			formSubmit(e){
-				const data = this.checked+''==='1'?e.detail.value:{
-					...e.detail.value,
+				const obj=e.detail.value;
+				if(this.checked+''!=='1'&&obj.receiverTel.length!==11){
+					this.$tips('提示','请输入正确的联系方式');
+					return;
+				}
+				const data = this.checked+''==='1'?obj:{
+					...obj,
 					address: this.pickerData2[this.index]?.address
 				};
 				this.order(data)
@@ -202,7 +210,7 @@
 			},
 			order(orderAddress) {
 				const that = this;
-				let data = that.$store.getOrder();
+				let data = that.orderData;
 				let userInfo = that.$store.getLoginInfo();
 				let addrsInfo = that.$store.getAddrsInfo();
 				let getPharmacy=this.$store.getPharmacy();

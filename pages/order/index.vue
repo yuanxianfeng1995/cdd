@@ -18,8 +18,15 @@
 				{{item.label}}
 			</view>
 		</scroll-view>
-		<Empty v-if="data&&data.length===0"></Empty>
-		<List ref="orderList" v-else :data="data" @ok="ok" @itemClick="itemClick" @scrollBottom="scrollBottom"></List>
+		<template v-if="data&&data.length===0">
+			<Empty></Empty>
+			<view class="no-login" v-if="!userId">
+				<text>登录才能查看你的订单哦</text>
+				<button class="primary-btn" open-type="getUserInfo" @getuserinfo="login" withCredentials="true">登录</button>
+			</view>
+		</template>
+		<List ref="orderList" :scrollNoData="scrollNoData" v-else :data="data" @ok="ok" @itemClick="itemClick" @scrollBottom="scrollBottom"></List>
+	  
 	</view>
 </template>
 
@@ -53,9 +60,9 @@ export default {
         { label: '已下单', value: 0 },
       ],
 			data: [],
-			status: 0,
+			status: 'all',
 			pageNo: 1,
-			noData: false,
+			scrollNoData: false,
 			scroll: false
     };
   },
@@ -72,6 +79,9 @@ export default {
 		userType(){
 		  return this.$store.getLoginInfo()?.userType||'1'
 		},
+		userId(){
+		  return this.$store.getLoginInfo()?.userId
+		},
     style() {
       return `margin-top:-${
         this.CustomBar - 100
@@ -87,6 +97,43 @@ export default {
 		uni.stopPullDownRefresh();
 	},
   methods: {
+		login(val) {
+			const that = this;
+			const id=this.$store.getLoginInfo()?.userId;
+			if(id) return;
+			console.log('val',val)
+			if(val.detail.errMsg!=='getUserInfo:ok') {
+					that.$tips('提示', '用户取消授权');
+					return;
+			}
+			wx.login({
+				success(res) {
+					console.log('login', res)
+					var code = res.code
+					if (code) {
+						//发起网络请求
+						// 获取微信用户信息
+						wx.getUserInfo({
+							success: function(val) {
+								const parms = {
+									...val,
+									code: code,
+								};
+								that.$store.setUserInfo(parms);
+								uni.navigateTo({
+									url: '/pages/login/index',
+								});
+							},
+							fail: res => {
+								that.$tips('提示', '用户取消授权');
+							}
+						})
+					} else {
+						that.$tips('失败', '登录失败！');
+					}
+				}
+			})
+		},
 		getDict(){
 			getDict('order_status_type').then(({data})=>{
 				console.log('getDict',data)
@@ -95,18 +142,22 @@ export default {
 		scrollBottom(next){
 			console.log('scrollBottom')
 			const that=this;
-			that.pageNo=that.pageNo+9;
+			if(!that.scrollNoData){
+			that.pageNo=that.pageNo+1;
 			that.scroll=true;
 			that.getOrderPage().then(()=>{
-					next(that.noData);
-					that.scroll=false;
+					next(that.scrollNoData);
 			});
+				return;
+			}
+			next();
 		},
     tabSelect(value) {
 			this.$loading.open();
       this.current = value;
 			this.pageNo=1;
 			this.scroll=false;
+			this.scrollNoData=false;
 			this.getOrderPage().then(()=>{
 				if(this.$refs.orderList) this.$refs.orderList.setLoading(false);
 			});
@@ -129,7 +180,7 @@ export default {
 				console.log('getOrderPage',data,that.scroll)
 				if(that.scroll){
 					if(((data?.data?.list)||[]).length===0) {
-						that.noData=true;
+						that.scrollNoData=true;
 					}else{
 						that.data.push(...data?.data?.list)
 					}
@@ -156,5 +207,20 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+	.no-login{
+		background-color: --background-color-main-1;
+		text-align: center;
+		margin-top: 20px;
+		font-size: 32rpx;
+		text{
+			font-size: 34rpx;
+			color: #666;
+		}
+		.primary-btn{
+			width: 200px;
+			margin: 10px auto 0 auto;
+		}
+	}
+	
 </style>

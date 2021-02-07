@@ -14,7 +14,7 @@
 				 	</view>
 				 	<view class="flex-row" style="border:1rpx solid var(--border-color-0)">
 				 		<text style="padding:10rpx 30rpx;" @click="cut(index)">-</text>
-				 		<input type="number" :disabled="mode!=='edit'" @blur="inputChange($event,index)" :value="item.number" style="text-align:center;width:80rpx;background-color:var(--background-color-1)" />
+				 		<input type="number" :disabled="mode!=='edit'" @blur="inputChange($event,index)" :value="item.number" auto-blur style="text-align:center;width:80rpx;background-color:var(--background-color-1)" />
 				 		<text style="padding:10rpx 30rpx;" @click="add(index)">+</text>
 				 	</view>
 				 </view>
@@ -104,21 +104,22 @@
 			},
 			cut(index){
 				if(this.mode!=='edit') return;
-				this.list[index].number=this.list[index].number-1;
+				const data=parseInt(this.list[index].number);
+				this.list[index].number=data-1;
 				if(this.list[index].number<=0){
 					this.list.splice(index,1)
 				}
 			},
 			add(index){
 				if(this.mode!=='edit') return;
-				this.list[index].number=this.list[index].number+1;
+				const data=parseInt(this.list[index].number);
+				this.list[index].number=data+1;
 				this.totalMoney=this.list.length>0?this.list.map(item=>item.number*item.price).reduce((a,b)=>{
 					return a+b
 				}):0
 			},
 			inputChange(e,index){
 				console.log('inputChange',e)
-				if(this.mode!=='edit') return;
 				this.list[index].number=e.detail.value;
 				this.totalMoney=this.list.length>0?this.list.map(item=>item.number*item.price).reduce((a,b)=>{
 					return a+b
@@ -143,6 +144,7 @@
 		z-index: 9;
 		text-align: right;
 		margin-bottom: 10px;
+		margin-right: 10px;
 	}
 	.card-content{
 		flex: 1;

@@ -98,6 +98,7 @@ export default {
 	async onReady() {
 		const id=this.$store.getLoginInfo()?.userId;
 		this.userType=this.$store.getLoginInfo()?.userType||'1';
+		console.log('onReady',this.$store.getLoginInfo(),this.$store.getUserInfo())
 		if(id) {
 			this.userInfo=this.$store.getUserInfo()?.userInfo;
 			this.getUserInfo();
@@ -167,6 +168,7 @@ export default {
 			uni.$emit('cleanUpCache');
 			uni.$emit('shoppingCartCount',0);
 			this.$tips('成功','缓存清理成功');
+			console.log('this.$store.getLoginInfo()?',this.$store.getLoginInfo())
 		},
 		gotoOrder(){
 			uni.navigateTo({

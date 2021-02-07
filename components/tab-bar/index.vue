@@ -65,7 +65,6 @@
 					let data = this.$store.getLoginInfo();
 					console.log('authorize',data)
 					if(!(data&&data.userId)){
-						this.$tips('提示','您没有登录');
 						response()
 					}else{
 						resolve()
@@ -73,13 +72,14 @@
 				})
 			},
 			cut(value) {
-				if(value==='home'||value==='mine'){
-					this.current = value;
-					return;
-				}
-				this.authorize().then(()=>{
-						this.current = value;
-				})
+				// if(value==='home'||value==='mine'){
+				// 	this.current = value;
+				// 	return;
+				// }
+				// this.authorize().then(()=>{
+				// 		this.current = value;
+				// })
+				this.current = value;
 			},
 		},
 	}

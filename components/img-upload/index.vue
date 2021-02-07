@@ -62,7 +62,7 @@
 										console.log('uploadFile', data)
 										const val = JSON.parse(data);
 										that.loadingIndex = null;
-										that.$set(that.fileList, index, imgUrl + val?.datas?.url)
+										that.$set(that.fileList, index, val?.datas?.url.indexOf('http')!==-1?val?.datas?.url: imgUrl + val?.datas?.url)
 									},
 									fail: (e) => {
 										that.loadingIndex = null;

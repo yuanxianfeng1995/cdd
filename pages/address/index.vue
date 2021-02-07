@@ -11,7 +11,7 @@
 					<input name="address" type="text" />
 				</view>
 				<view class="address-footer">
-					<button type="primary" form-type="submit">保存地址</button>
+					<button class="primary-btn" form-type="submit">保存地址</button>
 				</view>
 			</form>
 		</view>

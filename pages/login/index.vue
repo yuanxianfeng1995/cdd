@@ -2,8 +2,11 @@
 	<Container style="padding-top: 100rpx;"  title="登录">
 		<view class="login" :style="[{backgroundColor:'var(--background-color-1)'}]">
 			<view class="content">
-				<button type="primary" size="mini"  open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"
-				 @getphonenumber="getPhoneNumber" withCredentials="true">授权登录</button>
+				<button class="primary-btn"   open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"
+				 @getphonenumber="getPhoneNumber" withCredentials="true">
+				  <image class="img" src="../../static/weixin.png"></image>
+					<text>授权登录</text>
+				</button>
 			</view>
 		</view>
 	</Container>
@@ -56,9 +59,8 @@
 						console.log('login', res)
 						setLoginInfo(res.data.data)
 						that.$loading.close()
-						that.$tips('成功', '登陆成功');
 						uni.navigateTo({
-							url: '/pages/index/index',
+							url: "/pages/index/index?current='mine'",
 						});
 					}else{
 						that.$tips('失败',res.resMsg);
@@ -87,6 +89,15 @@
 		}
 
 		.content {
+			width: 80%;
+			.img{
+			  width: 25px;
+			  height: 25px;
+				position: relative;
+				top: 6px;
+				margin-right: 5px;
+			}
 		}
+		
 	}
 </style>

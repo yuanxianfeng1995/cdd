@@ -51,20 +51,6 @@ import {
 export default {
   onReady() {
     let that = this;
-    uni
-      .createSelectorQuery()
-      .select('.index-bar-box')
-      .boundingClientRect(function (res) {
-        that.boxTop = res.top;
-      })
-      .exec();
-    uni
-      .createSelectorQuery()
-      .select('.indexes')
-      .boundingClientRect(function (res) {
-        that.barTop = res.top;
-      })
-      .exec();
   },
   data() {
   			return {
@@ -80,50 +66,22 @@ export default {
   				loding: true
   			};
   		},
-  		async onLoad() {
-  			this.$loading.open()
-  			await this.authorize();
-  			await this.getMini();
+  		onLoad() {
+  			this.getMini();
   		},
-  		async onReady() {
-  			let that = this;
-  			uni
-  				.createSelectorQuery()
-  				.select('.index-bar-box')
-  				.boundingClientRect(function(res) {
-  					that.boxTop = res.top;
-  				})
-  				.exec();
-  			uni
-  				.createSelectorQuery()
-  				.select('.indexes')
-  				.boundingClientRect(function(res) {
-  					that.barTop = res.top;
-  				})
-  				.exec();
+  		onReady() {
+				this.getMini();
   		},
   		methods: {
-  			async authorize() {
-  				const that = this;
-  				wx.getSetting({
-  					success(res) {
-  						let info = that.$store.getLoginInfo();
-  						if (!(res.authSetting['scope.userInfo'] && info?.token)) {
-  							uni.navigateTo({
-  								url: '/pages/login/index',
-  							});
-  						}
-  					}
-  				})
-  			},
   			async getMini() {
   				const that = this;
   				let info = this.$store.getLoginInfo();
-  				if (info?.token) {
+  		
   					getMini().then(({
   						data
   					}) => {
   						console.log('data',data)
+								that.$tips('that.getMini111',JSON.stringify(data?.data?.A));
   						let list = [];
   						let i = 0;
   						let obj = data?.data || {};
@@ -139,9 +97,6 @@ export default {
   						that.listCur = that.list[0];
   						that.$loading.close()
   					})
-  				}else{
-  					that.$loading.close()
-  				}
   			},
   			addShoppingCart(val) {
   				console.log('addShoppingCart', val)
